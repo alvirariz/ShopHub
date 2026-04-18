@@ -40,6 +40,25 @@ async function main() {
 
   }
 
+  for (let i = 0; i < 10; i++) {
+    await prisma.Notification.create({
+      data: {
+        message: faker.helpers.arrayElement([
+        "Your order has been placed",
+        "Your order has been shipped",
+        "New product added",
+        "System maintenance scheduled"
+        ]),
+        type:faker.helpers.arrayElement(['order', 'product', 'system', 'admin']),
+        isRead: faker.datatype.boolean(),
+        createdAt: faker.date.recent(),
+        
+        userId: faker.number.int({min:1,max: 5}),
+      }
+    })
+  }
+
+
   console.log("Database seeded with fake data successfully!") // just prints message in terminal to show it worked
 }
 
