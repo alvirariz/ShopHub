@@ -1,0 +1,55 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "sqlserver"
+    url = env("DATABASE_URL")
+}
+
+model Product {
+    id          Int         @id @default(autoincrement())
+    name        String 
+    price       Float
+    stock       Int 
+    isWithdrawn Boolean     @default(false)
+    isDeleted   Boolean     @default(false)
+    storeId     Int         
+    orderItems  OrderItem[]
+    cartItems   CartItem[]
+}
+
+model Order {
+  id         Int         @id @default(autoincrement())
+  status     String
+  createdAt  DateTime    @default(now())
+  customerId Int
+  items      OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  order     Order   @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+model Cart {
+    id        Int        @id @default(autoincrement())
+    userId    Int        @unique
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+    isDeleted Boolean    @default(false)
+    cartItems CartItem[]
+}
+
+model CartItem {
+    id        Int     @id @default(autoincrement())
+    quantity  Int
+    cartId    Int
+    productId Int
+    cart      Cart    @relation(fields: [cartId], references: [id])
+    product   Product @relation(fields: [productId], references: [id])
+}
