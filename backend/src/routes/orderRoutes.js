@@ -3,9 +3,11 @@ const router = express.Router();
 
 
 const {
- viewIncomingOrders
+ viewIncomingOrders,
+ viewSpecificOrders
 } = require('../controllers/orderController');
 
 // Compare products
 router.get('/view', viewIncomingOrders);
+router.get('/:orderId', viewSpecificOrders );
 module.exports = router
