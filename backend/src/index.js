@@ -20,8 +20,8 @@ const cartRoutes = require('./routes/cartRoutes');
 app.use('/api/cart', cartRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/notifications', notificationRoutes);
-
-
+const orderRoutes = require('./routes/orderRoutes')
+app.use('/api/orders', orderRoutes)
 
 // Health check
 app.get('/', (req, res) => {
