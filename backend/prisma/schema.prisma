@@ -17,6 +17,7 @@ model Product {
     storeId     Int         
     orderItems  OrderItem[]
     cartItems   CartItem[]
+    wishlistItems WishlistItem[]   // relation with wishlist items 
 }
 
 model Order {
@@ -64,3 +65,22 @@ model Notification {
   userId        Int
   //user          User      @relation(fields: [userId], references: [id])
 }
+
+model Wishlist {
+ id  Int  @id @default(autoincrement())
+ userId    Int @unique
+ createdAt DateTime @default(now())
+ items    WishlistItem[]
+
+}
+
+model WishlistItem {
+    id Int @id @default(autoincrement())
+    wishlistId Int 
+    productId Int 
+    addedAt DateTime @default(now())
+    wishlist Wishlist @relation(fields: [wishlistId], references: [id])
+    product Product @relation(fields: [productId], references: [id])
+}
+
+

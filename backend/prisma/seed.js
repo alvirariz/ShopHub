@@ -77,6 +77,19 @@ async function main() {
     })
   }
 
+
+
+await prisma.wishlist.create({
+  data:{ userId:1,
+    wishlistItems:{ create:[{productId:1 }, {productId:3 }, {productId:5}]}
+  }
+})
+  
+await prisma.wishlist.create({
+  data:{ userId:2,
+    wishlistItems:{ create:[{productId:2 }, {productId:4 }, {productId:6}]}
+  }
+})
     console.log("Database seeded with fake data successfully!");
 }
 
@@ -84,3 +97,4 @@ async function main() {
 main()
   .catch(console.error) // if soemthing goes wrong will print error in terminal
   .finally(() => prisma.$disconnect()) //good pratcice after done close the prisma connection
+  
