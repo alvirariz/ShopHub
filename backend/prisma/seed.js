@@ -1,13 +1,10 @@
-const {PrismaClient} = require('@prisma/client');
-const {faker} = require('@faker-js/faker');
-const bcrypt = require('bcrypt');
+const { PrismaClient } = require('@prisma/client') // require means import prisma client talks to our db
+const { faker } = require('@faker-js/faker') // faker lib to generate fake data
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient() // this creates a connection now through prisma we can create update read etc
 
 async function main() {
-
-    // fake products for cart 
-    for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     await prisma.product.create({
       data: {
         name: faker.commerce.productName(),
@@ -18,7 +15,7 @@ async function main() {
     })
   }
 
-    for (let i = 0; i < 5; i++) {
+  for (let i = 0; i < 5; i++) {
     await prisma.order.create({
       data: {
         status: faker.helpers.arrayElement(['pending', 'delivered', 'cancelled']),
@@ -62,11 +59,28 @@ async function main() {
         }
     }
 
+    for (let i = 0; i < 10; i++) {
+    await prisma.Notification.create({
+      data: {
+        message: faker.helpers.arrayElement([
+        "Your order has been placed",
+        "Your order has been shipped",
+        "New product added",
+        "System maintenance scheduled"
+        ]),
+        type:faker.helpers.arrayElement(['order', 'product', 'system', 'admin']),
+        isRead: faker.datatype.boolean(),
+        createdAt: faker.date.recent(),
+        
+        userId: faker.number.int({min:1,max: 5}),
+      }
+    })
+  }
+
     console.log("Database seeded with fake data successfully!");
 }
 
+
 main()
-    .catch(console.error)
-    .finally(async () => {
-        await prisma.$disconnect();
-    });
+  .catch(console.error) // if soemthing goes wrong will print error in terminal
+  .finally(() => prisma.$disconnect()) //good pratcice after done close the prisma connection
