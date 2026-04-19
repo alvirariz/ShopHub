@@ -7,11 +7,11 @@ const {
     compareProducts
 } = require('../controllers/productController');
 
-
-// Withdraw or delist a product
-//router.patch('/withdraw/:productId', withdrawProduct);
-
 // Compare products
 router.get('/compare', compareProducts);
 
-module.exports = router;
+//code by lamiya
+//the usecase to withdraw product listing 
+router.put('/:productId/withdraw',withdrawProduct)
+
+module.exports=router

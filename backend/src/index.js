@@ -21,6 +21,8 @@ app.use('/api/cart', cartRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/notifications', notificationRoutes);
 
+
+
 // Health check
 app.get('/', (req, res) => {
   res.json({ 
