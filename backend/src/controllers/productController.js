@@ -91,4 +91,24 @@ const withdrawProduct = async (req,ans) =>
 
 }
 
-module.exports = {withdrawProduct} //making this func public for toher files to access
+
+// compare products 
+const compareProducts = async (req,res) => {
+    try{
+        const {ids} = req.query // productIds to compare
+        if (!ids) return res.status(400).json({ message: 'No product IDs provided' });
+
+        const productIds = ids.split(',').map(id => parseInt(id));
+
+        const products = await prisma.product.findMany({
+            where:{id:{in:productIds}, isDeleted: false, isWithdrawn: false}
+        });
+
+        res.status(200).json({count: products.length, products});
+    }
+    catch(error){
+        res.status(500).json({message:"Error comparing products",error});
+    }
+}
+
+module.exports = {withdrawProduct, compareProducts} //making this func public for toher files to access
