@@ -38,7 +38,7 @@ const withdrawProduct = async (req,ans) =>
             return ans.status(404).json({message: "Product not found "})
         }
 
-        if(action==="delete")
+        if(action==="delete") //== for valus only and === for values and type
         {
             //checking if pending orders
             const pendingOrders= await prisma.orderItem.findFirst({
@@ -57,26 +57,26 @@ const withdrawProduct = async (req,ans) =>
                 })
             }
 
-            await prisma.product.update(
+          const updated =  await prisma.product.update(
             {
                 where:{id: parseInt(productId)},
                 data:{isDeleted:true}
             })
    
-            return ans.json({message:"Product deleted succesfully",product }) //ans.json() is how to send data to frontend
+            return ans.json({message:"Product deleted succesfully",product:updated }) //ans.json() is how to send data to frontend
         }
 
         if(action==="delist")
         {
             //no need to check for pending orders aab
 
-            await prisma.product.update(
+           const updated = await prisma.product.update(
             {
                 where:{id: parseInt(productId)},
                 data:{isWithdrawn:true}
             })
    
-            return ans.json({message:"Product delisted succesfully",product }) //ans.json() is how to send data to frontend
+            return ans.json({message:"Product delisted succesfully",product:updated }) //ans.json() is how to send data to frontend
         }
        
         //if neither delist or delete:

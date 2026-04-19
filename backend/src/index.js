@@ -19,6 +19,13 @@ app.use('/api/cart', cartRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/notifications', notificationRoutes);
 
+//withdraw_products router
+const productRoutes = require('./routes/productRoutes')
+app.use('/api/products', productRoutes)
+
+
+
+
 // Health check
 app.get('/', (req, res) => {
   res.json({ 
