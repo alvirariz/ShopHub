@@ -92,6 +92,55 @@ const withdrawProduct = async (req,ans) =>
 }
 
 
+const updateStockQuantity = async (req,ans) =>
+{
+try
+{
+        const { productId } = req.params   // which product
+    const { stock } = req.body         // the new stock number
+
+    //does product exist?
+    const product = await prisma.product.findUnique({
+            where:{id: parseInt(productId)}
+        })
+    
+    if(!product)
+    {
+        return ans.status(400).json({message: "Product not found "})
+    }
+
+     if (isNaN(stock))
+    {
+        return ans.status(400).json({ message: "Stock must be a number" })
+    }
+
+    if (stock<0 )
+    {
+        return ans.status(400).json({message: " stock cannot be negative "})
+    }
+   
+    
+        const updated =  await prisma.product.update(
+            {
+                where:{id: parseInt(productId)},
+                data:{stock: stock} // tryint t set there product id set stock = req.body
+            })
+        return ans.json({ message: "Stock updated successfully", product: updated })
+    
+    
+}
+
+     catch(error)
+        {
+            ans.status(500).json({message:"something went wrong error",error}) //500 is standard server error
+        }
+    
+
+}
+
+
+
+
 // compare products 
 const compareProducts = async (req,res) => {
     try{
@@ -111,4 +160,4 @@ const compareProducts = async (req,res) => {
     }
 }
 
-module.exports = {withdrawProduct, compareProducts} //making this func public for toher files to access
+module.exports = {withdrawProduct, compareProducts,updateStockQuantity} //making this func public for toher files to access
