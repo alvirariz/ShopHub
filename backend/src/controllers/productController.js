@@ -2,25 +2,8 @@
 const {PrismaClient} = require('@prisma/client')
 const prisma = new PrismaClient()
 
-//the ucecase
-//have to witdarw product listing 
-//steps:
-// Store owner navigates to product listings and selects a product
-// System displays product options including "Delete" and "Delist"
+//the usecase withdraw product listing 
 
-// Store owner selects "Delete" or "Delist"
-//System displays a confirmation prompt
-
-//Store owner confirms the action
-//System deletes or marks the product as inactive/delisted
-
-//System confirms the action and updates the product listing accordingly
-
-//Store owner cancels the confirmation
-//System takes no action and returns to the product listing
-
-//Product has pending orders at time of deletion
-//System warns the store owner and prevents deletion until orders are resolved; delist is still permitted
 
 const withdrawProduct = async (req,ans) =>
 {
@@ -96,7 +79,7 @@ const updateStockQuantity = async (req,ans) =>
 {
 try
 {
-        const { productId } = req.params   // which product
+    const { productId } = req.params   // which product
     const { stock } = req.body         // the new stock number
 
     //does product exist?
@@ -160,4 +143,24 @@ const compareProducts = async (req,res) => {
     }
 }
 
-module.exports = {withdrawProduct, compareProducts,updateStockQuantity} //making this func public for toher files to access
+const viewLowStockAlerts = async (req, ans) => {
+  try {
+    const products = await prisma.product.findMany({
+      where: { stock: { lt: 10 } } // lt mean less than 10
+    })
+
+    if(products.length === 0) {
+      return ans.status(200).json({ message: "No low stock products" })
+    }
+
+    return ans.json({ message: "Low stock products", products: products })
+
+  } catch(error) {
+    ans.status(500).json({ message: "something went wrong", error })
+  }
+}
+
+
+module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts} //making this func public for toher files to access
+
+
