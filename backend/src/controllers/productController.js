@@ -160,7 +160,85 @@ const viewLowStockAlerts = async (req, ans) => {
   }
 }
 
+const addProduct = async (req, res) => {
+    const { name, price, category, brand, stock, storeId } = req.body;
+    
+    try {
+        // Validation
+        if (!name || !price || !category || !stock) {
+            return res.status(400).json({ 
+                message: "Missing required fields: name, price, category, stock" 
+            });
+        }
+        
+        const product = await prisma.Product.create({
+            data: {
+                name,
+                price: parseFloat(price),
+                category,
+                brand: brand || "",
+                stock: parseInt(stock),
+                storeId: parseInt(storeId),
+                rating: 0,
+                salesCount: 0,
+                
+                isDeleted: false,
+                isWithdrawn: false
+            }
+        });
+        
+        return res.status(201).json({ 
+            message: "Product added successfully", 
+            product 
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error adding product",
+            error: error.message
+        });
+    }
+};
 
-module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts} //making this func public for toher files to access
+const editProduct = async (req, res) => {
+    const { productId } = req.params;
+    const updates = req.body;
+    
+    try {
+        // Check if product exists
+        const product = await prisma.Product.findUnique({
+            where: { id: parseInt(productId) }
+        });
+        
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        
+        
+        if (updates.price) updates.price = parseFloat(updates.price);
+        if (updates.stock) updates.stock = parseInt(updates.stock);
+        
+        const updated = await prisma.Product.update({
+            where: { id: parseInt(productId) },
+            data: updates
+        });
+        
+        return res.json({ 
+            message: "Product updated successfully", 
+            product: updated 
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error updating product",
+            error: error.message
+        });
+    }
+};
+
+
+
+
+module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts,addProduct,editProduct} //making this func public for toher files to access
 
 
