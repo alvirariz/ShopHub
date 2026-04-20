@@ -20,7 +20,7 @@ async function main() {
   const users = await prisma.user.findMany()
   const userIds = users.map(u => u.id)
 
-  for (let i = 0; i < 200; i++) {
+  for (let i = 0; i < 10; i++) {
     await prisma.product.create({
       data: {
         name: faker.commerce.productName(),
