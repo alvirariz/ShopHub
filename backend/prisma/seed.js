@@ -1,21 +1,23 @@
-const { PrismaClient } = require('@prisma/client') // require means import prisma client talks to our db
-const { faker } = require('@faker-js/faker') // faker lib to generate fake data
+const { PrismaClient } = require('@prisma/client')
+const { faker } = require('@faker-js/faker')
 
-const prisma = new PrismaClient() // this creates a connection now through prisma we can create update read etc
+const prisma = new PrismaClient()
 
 async function main() {
 
- // create fake users
- for (let i = 0; i < 10; i++) {
-  await prisma.user.create({
-    data: {
-      name: faker.person.fullName(),
-      email: faker.internet.email() + i + Date.now(), // UNIQUE or we riot
-      password: faker.internet.password(),
-      role: faker.helpers.arrayElement(["customer", "storeOwner"]),
-    }
-  })
-}
+  for (let i = 0; i < 10; i++) {
+    await prisma.user.create({
+      data: {
+        name: faker.person.fullName(),
+        email: faker.internet.email() + i + Date.now(),
+        password: faker.internet.password(),
+        role: faker.helpers.arrayElement(["customer", "storeOwner"]),
+      }
+    })
+  }
+
+  const users = await prisma.user.findMany()
+  const userIds = users.map(u => u.id)
 
   for (let i = 0; i < 200; i++) {
     await prisma.product.create({
@@ -24,122 +26,111 @@ async function main() {
         price: parseFloat(faker.commerce.price()),
         stock: faker.number.int({ min: 1, max: 100 }),
         storeId: faker.number.int({ min: 1, max: 3 }),
-
         category: faker.helpers.arrayElement(["electronics", "clothing", "books", "home"]),
         brand: faker.helpers.arrayElement(["apple", "nike", "samsung", "generic"]),
-        
         rating: faker.number.float({ min: 1, max: 5, precision: 0.1 }),
         salesCount: faker.number.int({ min: 0, max: 500 })
       }
     })
   }
 
-  // added shipping address, methods, total 
+  const products = await prisma.product.findMany()
+  const productIds = products.map(p => p.id)
+
+  const createdOrders = []
   for (let i = 0; i < 5; i++) {
-    await prisma.order.create({
+    const order = await prisma.order.create({
       data: {
         status: faker.helpers.arrayElement(['pending', 'delivered', 'cancelled']),
-        customerId: faker.number.int({ min: 1, max: 5 }),
-        shippingAddress: faker.location.streetAddress(), 
-        shippingMethod: faker.helpers.arrayElement(['standard', 'express', 'overnight']), 
-        total: parseFloat(faker.commerce.price({min:50, max:1000})), 
+        customerId: faker.helpers.arrayElement(userIds),
+        shippingAddress: faker.location.streetAddress(),
+        shippingMethod: faker.helpers.arrayElement(['standard', 'express', 'overnight']),
+        total: parseFloat(faker.commerce.price({ min: 50, max: 1000 })),
       }
     })
+    createdOrders.push(order)
   }
 
-  for(let i = 0 ; i<5 ;i++)
-  {
+  const orderIds = createdOrders.map(o => o.id)
+
+  for (let i = 0; i < 5; i++) {
     await prisma.orderItem.create({
-        data:
-        {
-            //id autoincremensts in schema.prisma
-            orderId: faker.number.int({min:1,max:3}),
-            productId:faker.number.int({ min: 1, max: 5}),
-            quantity: faker.number.int({ min: 1, max: 5 }),
-            price: parseFloat(faker.commerce.price({min: 5, max:500})), // added data for new field price 
-
-        }
-
-    })
-
-  }
-
-    const users = await prisma.user.findMany()
-
-    for (const user of users) {
-      const cart = await prisma.cart.upsert({
-      where: { userId: user.id },
-      update: {}, // do nothing if exists
-      create: {
-      userId: user.id,
-      isDeleted: false,
+      data: {
+        orderId: faker.helpers.arrayElement(orderIds),
+        productId: faker.helpers.arrayElement(productIds),
+        quantity: faker.number.int({ min: 1, max: 5 }),
+        price: parseFloat(faker.commerce.price({ min: 5, max: 500 })),
       }
     })
-    
+  }
 
-        for (let j = 0; j < faker.number.int({ min: 1, max: 4 }); j++) {
-            await prisma.cartItem.create({
-                data: {
-                    quantity:  faker.number.int({ min: 1, max: 10 }),
-                    cartId:    cart.id,
-                    productId: faker.number.int({ min: 1, max: 10 }), // assumes 10 products already created 
-                }
-            });
+  for (const user of users) {
+    const cart = await prisma.cart.upsert({
+      where: { userId: user.id },
+      update: {},
+      create: {
+        userId: user.id,
+        isDeleted: false,
+      }
+    })
+
+    for (let j = 0; j < faker.number.int({ min: 1, max: 4 }); j++) {
+      await prisma.cartItem.create({
+        data: {
+          quantity: faker.number.int({ min: 1, max: 10 }),
+          cartId: cart.id,
+          productId: faker.helpers.arrayElement(productIds),
         }
+      })
     }
+  }
 
-    for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     await prisma.Notification.create({
       data: {
         message: faker.helpers.arrayElement([
-        "Your order has been placed",
-        "Your order has been shipped",
-        "New product added",
-        "System maintenance scheduled"
+          "Your order has been placed",
+          "Your order has been shipped",
+          "New product added",
+          "System maintenance scheduled"
         ]),
-        type:faker.helpers.arrayElement(['order', 'product', 'system', 'admin']),
+        type: faker.helpers.arrayElement(['order', 'product', 'system', 'admin']),
         isRead: faker.datatype.boolean(),
         createdAt: faker.date.recent(),
-        
         userId: users[i].id,
       }
     })
   }
 
-
-
-await prisma.wishlist.create({
-  data:{ userId:1,
-    items:{ create:[{productId:1 }, {productId:3 }, {productId:5}]}
+  const shuffledUsers = faker.helpers.shuffle([...userIds])
+  for (let i = 0; i < 2; i++) {
+    await prisma.wishlist.upsert({
+      where: { userId: shuffledUsers[i] },
+      update: {},
+      create: {
+        userId: shuffledUsers[i],
+        items: {
+          create: faker.helpers.arrayElements(productIds, 3).map(productId => ({ productId }))
+        }
+      }
+    })
   }
-})
-  
-await prisma.wishlist.create({
-  data:{ userId:2,
-    items:{ create:[{productId:2 }, {productId:4 }, {productId:6}]}
+
+  for (let i = 0; i < 10; i++) {
+    await prisma.review.create({
+      data: {
+        customerId: faker.helpers.arrayElement(users).id,
+        productId: faker.helpers.arrayElement(products).id,
+        rating: faker.number.int({ min: 1, max: 5 }),
+        title: faker.lorem.words(2),
+        body: faker.lorem.sentence(),
+      }
+    })
   }
-})
 
-    // added data for reviews with diff ratings and products
-   const products = await prisma.product.findMany()
-
-for (let i = 0; i < 10; i++) {
-  await prisma.review.create({
-    data: {
-      customerId: faker.helpers.arrayElement(users).id,
-      productId: faker.helpers.arrayElement(products).id,
-      rating: faker.number.int({ min: 1, max: 5 }),
-      title: faker.lorem.words(2),
-      body: faker.lorem.sentence(),
-    }
-  })
+  console.log("Database seeded with fake data successfully!")
 }
-
-    console.log("Database seeded with fake data successfully!");
-}
-
 
 main()
-  .catch(console.error) // if soemthing goes wrong will print error in terminal
-  .finally(() => prisma.$disconnect()) //good pratcice after done close the prisma connection
-  
+  .catch(console.error)
+  .finally(() => prisma.$disconnect())
