@@ -21,11 +21,11 @@ app.use('/api/products', productRoutes);
 const cartRoutes = require('./routes/cartRoutes');
 app.use('/api/cart', cartRoutes);
 const notificationRoutes = require('./routes/notificationRoutes');
-app.use('/notifications', notificationRoutes);
+app.use('/api/notifications', notificationRoutes);
 const orderRoutes = require('./routes/orderRoutes')
 app.use('/api/orders', orderRoutes)
 const preferenceRoutes = require('./routes/preferenceRoutes');
-app.use('/preferences', preferenceRoutes);
+app.use('/api/preferences', preferenceRoutes);
 const adminRoutes = require('./routes/adminRoutes')
 app.use('/api/admin', adminRoutes)
 // Health check
