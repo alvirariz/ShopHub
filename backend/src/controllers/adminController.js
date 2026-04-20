@@ -170,4 +170,47 @@ const manageUserStatus = async (req, res) => {
     }
 };
 
-module.exports = { ViewSalesReport, viewCustomerInsights, manageUserStatus}
+const getPlatformMetrics = async (req, res) => {
+    try {
+        // Basic counts
+        const totalUsers = await prisma.User.count();
+        const totalOrders = await prisma.Order.count();
+        const totalProducts = await prisma.Product.count();
+        
+        // Total revenue
+        const totalRevenue = await prisma.Order.aggregate({
+            _sum: { total: true }
+        });
+        
+        // Recent activity (last 24 hours)
+        const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+        
+        const recentUsers = await prisma.User.count({
+            where: { createdAt: { gte: oneDayAgo } }
+        });
+        
+        const recentOrders = await prisma.Order.count({
+            where: { createdAt: { gte: oneDayAgo } }
+        });
+        
+        return res.json({
+            metrics: {
+                totalUsers,
+                totalOrders,
+                totalProducts,
+                totalRevenue: totalRevenue._sum.totalAmount || 0,
+                recentUsers,
+                recentOrders
+            },
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error fetching platform metrics",
+            error: error.message
+        });
+    }
+};
+
+module.exports = { ViewSalesReport, viewCustomerInsights, manageUserStatus,getPlatformMetrics }
