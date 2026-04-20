@@ -75,7 +75,7 @@ model Notification {
   createdAt     DateTime  @default(now())
   
   userId        Int
-  //user          User      @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
 }
 
 model Wishlist {
@@ -102,7 +102,7 @@ model UserPreference {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   
-  //user          User      @relation(fields: [userId], references: [id])
+  user          User      @relation(fields: [userId], references: [id])
   
 }
 
@@ -126,4 +126,5 @@ model User {
   role      String   @default("customer")
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
+  isSuspended Boolean @default(false)
 }
