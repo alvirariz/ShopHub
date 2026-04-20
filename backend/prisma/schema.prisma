@@ -8,25 +8,21 @@ datasource db {
 }
 
 model Product {
-    id            Int      @id @default(autoincrement())
-  name          String
-  price         Float
-  stock         Int
-
-  category      String?   // NEW
-  brand         String? // NEW
-
-  rating        Float    @default(0) //NEW
-  salesCount    Int      @default(0) //NEW
-
-  isWithdrawn   Boolean  @default(false)
-  isDeleted     Boolean  @default(false)
-
-  storeId       Int
-
-  orderItems    OrderItem[]
-  cartItems     CartItem[]
-  wishlistItems WishlistItem[]   // relation with wishlist items 
+    id          Int         @id @default(autoincrement())
+    name        String 
+    price       Float
+    stock       Int 
+    isWithdrawn Boolean     @default(false)
+    isDeleted   Boolean     @default(false)
+    storeId     Int         
+    orderItems  OrderItem[]
+    cartItems   CartItem[]
+    wishlistItems WishlistItem[]   // relation with wishlist items 
+    reviews     Review[]           // relation with review 
+    category      String?   // NEW
+    brand         String? // NEW
+    rating        Float    @default(0) //NEW
+    salesCount    Int      @default(0) //NEW
 }
 
 model Order {
@@ -35,6 +31,10 @@ model Order {
   createdAt  DateTime    @default(now())
   customerId Int
   items      OrderItem[]
+
+  shippingAddress String? 
+  shippingMethod  String? 
+  total           Float?
 }
 
 model OrderItem {
@@ -42,6 +42,9 @@ model OrderItem {
   orderId   Int
   productId Int
   quantity  Int
+
+  price     Float? 
+
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
 }
@@ -104,3 +107,13 @@ model UserPreference {
 }
 
 
+model Review{
+    id          Int         @id @default(autoincrement())
+    rating      Int 
+    title       String 
+    body        String 
+    createdAt   DateTime    @default(now())
+    customerId  Int 
+    productId   Int 
+    product     Product     @relation(fields:[productId], references: [id])
+}
