@@ -4,6 +4,20 @@ const { faker } = require('@faker-js/faker') // faker lib to generate fake data
 const prisma = new PrismaClient() // this creates a connection now through prisma we can create update read etc
 
 async function main() {
+
+ // create fake users
+  const users = [
+    { name: "Alex Green", email: "alex@example.com", password: "password123", role: "customer" },
+    { name: "Sara Khan", email: "sara@example.com", password: "password123", role: "customer" },
+    { name: "Ali Ahmed", email: "ali@example.com", password: "password124", role: "customer" },
+    { name: "Zara Malik", email: "zara@example.com", password: "password123", role: "customer" },
+    { name: "Omar Siddiqui", email: "omar@example.com", password: "password123", role: "storeOwner" },
+  ]
+
+  for (const user of users) {
+    await prisma.user.create({ data: user })
+  }
+
   for (let i = 0; i < 200; i++) {
     await prisma.product.create({
       data: {
