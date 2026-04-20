@@ -18,6 +18,7 @@ model Product {
     orderItems  OrderItem[]
     cartItems   CartItem[]
     wishlistItems WishlistItem[]   // relation with wishlist items 
+    reviews     Review[]           // relation with review 
 }
 
 model Order {
@@ -26,6 +27,10 @@ model Order {
   createdAt  DateTime    @default(now())
   customerId Int
   items      OrderItem[]
+
+  shippingAddress String 
+  shippingMethod  String 
+  total           Float
 }
 
 model OrderItem {
@@ -33,6 +38,9 @@ model OrderItem {
   orderId   Int
   productId Int
   quantity  Int
+
+  price     Float 
+
   order     Order   @relation(fields: [orderId], references: [id])
   product   Product @relation(fields: [productId], references: [id])
 }
@@ -84,3 +92,13 @@ model WishlistItem {
 }
 
 
+model Review{
+    id          Int         @id @default(autoincrement())
+    rating      Int 
+    title       String 
+    body        String 
+    createdAt   DateTime    @default(now())
+    customerId  Int 
+    productId   Int 
+    product     Product     @relation(fields:[productId], references: [id])
+}
