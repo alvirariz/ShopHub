@@ -24,7 +24,8 @@ const orderRoutes = require('./routes/orderRoutes')
 app.use('/api/orders', orderRoutes)
 const preferenceRoutes = require('./routes/preferenceRoutes');
 app.use('/preferences', preferenceRoutes);
-
+const adminRoutes = require('./routes/adminRoutes')
+app.use('/api/admin', adminRoutes)
 // Health check
 app.get('/', (req, res) => {
   res.json({ 
