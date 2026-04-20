@@ -45,7 +45,49 @@ const viewSpecificOrders = async (req, ans) => {
   }
 }
 
-module.exports = { viewIncomingOrders,viewSpecificOrders }
+
+const updateOrderStatus = async(req,ans) =>
+{
+    try
+    {
+        const {orderId}=req.params
+        const {newStatus}=req.body
+        const order = await prisma.order.findUnique
+        ({
+            where: { id: parseInt(orderId) }
+        })
+
+        if(!order)
+        {
+            return ans.status(404).json({ message: "Order not found" })
+        }
+
+        const validStatuses = ['pending', 'processing', 'confirmed', 'shipped', 'delivered']
+
+        const currentIndex = validStatuses.indexOf(order.status)
+        const newIndex = validStatuses.indexOf(newStatus)
+
+        if(newIndex !== currentIndex + 1) 
+        {
+            return ans.status(400).json({ message: "Invalid status transition. Cannot skip a transition " })
+        }
+
+        const updated = await prisma.order.update
+        ({
+            where: { id: parseInt(orderId) },
+            data: { status: newStatus }
+        })
+
+        return ans.json({ message: "Order status updated successfully", order: updated })
+
+    }
+     catch(error)
+  {
+    ans.status(500).json({ message: "something went wrong", error: error.message })
+  }
+}
+
+module.exports = { viewIncomingOrders,viewSpecificOrders,updateOrderStatus }
 
 
 // Track Order Status 
