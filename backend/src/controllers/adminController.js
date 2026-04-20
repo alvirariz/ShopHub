@@ -126,4 +126,48 @@ const viewCustomerInsights = async (req, ans) => {
   }
 }
 
-module.exports = { ViewSalesReport, viewCustomerInsights}
+const manageUserStatus = async (req, res) => {
+    const { userId } = req.params;
+    const { action } = req.body;
+    
+    try {
+        // TODO: Later we'll check if req.user.role === 'admin'
+        // For now, anyone can do this (testing only!)
+        
+        const user = await prisma.User.findUnique({   // find user
+            where: { id: parseInt(userId) }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        if (action === "suspend") {
+            await prisma.User.update({
+                where: { id: parseInt(userId) },
+                data: { isSuspended: true }
+            });
+            return res.json({ message: "User suspended successfully" });
+        }
+        
+        if (action === "reactivate") {
+            await prisma.User.update({
+                where: { id: parseInt(userId) },
+                data: { isSuspended: false }
+            });
+            return res.json({ message: "User reactivated successfully" });
+        }
+        
+        return res.status(400).json({ 
+            message: "Invalid action. Use 'suspend' or 'reactivate'" 
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error managing user status",
+            error: error.message
+        });
+    }
+};
+
+module.exports = { ViewSalesReport, viewCustomerInsights, manageUserStatus}
