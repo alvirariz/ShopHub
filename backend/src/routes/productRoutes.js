@@ -6,12 +6,18 @@ const {
     withdrawProduct, 
     compareProducts,
     updateStockQuantity,
-    viewLowStockAlerts
+    viewLowStockAlerts,
+    addProduct,
+    editProduct
 } = require('../controllers/productController');
 
 // Compare products
 router.get('/compare', compareProducts);
 
+//add productss
+router.post('/', addProduct); 
+//edit
+router.put('/:productId', editProduct);
 
 //withdraw product listing 
 router.put('/:productId/withdraw',withdrawProduct)
