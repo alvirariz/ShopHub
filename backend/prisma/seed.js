@@ -4,13 +4,19 @@ const { faker } = require('@faker-js/faker') // faker lib to generate fake data
 const prisma = new PrismaClient() // this creates a connection now through prisma we can create update read etc
 
 async function main() {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 200; i++) {
     await prisma.product.create({
       data: {
         name: faker.commerce.productName(),
         price: parseFloat(faker.commerce.price()),
         stock: faker.number.int({ min: 1, max: 100 }),
         storeId: faker.number.int({ min: 1, max: 3 }),
+
+        category: faker.helpers.arrayElement(["electronics", "clothing", "books", "home"]),
+        brand: faker.helpers.arrayElement(["apple", "nike", "samsung", "generic"]),
+        
+        rating: faker.number.float({ min: 1, max: 5, precision: 0.1 }),
+        salesCount: faker.number.int({ min: 0, max: 500 })
       }
     })
   }
