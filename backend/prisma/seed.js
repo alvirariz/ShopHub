@@ -121,7 +121,7 @@ await prisma.wishlist.create({
         data: review
       })
     }
-    
+
     console.log("Database seeded with fake data successfully!");
 }
 
