@@ -7,7 +7,8 @@ const {
  viewSpecificOrders, 
  checkout, 
  viewOrderHistory,
- trackOrderStatus
+ trackOrderStatus,
+ updateOrderStatus
 } = require('../controllers/orderController');
 
 // Compare products
@@ -16,4 +17,7 @@ router.get('/history/:userId', viewOrderHistory);
 router.get('/track/:orderId', trackOrderStatus);
 router.post('/checkout', checkout);
 router.get('/:orderId', viewSpecificOrders );
+//update order status
+router.put('/:orderId/status', updateOrderStatus)
+
 module.exports = router

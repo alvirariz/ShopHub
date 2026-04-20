@@ -1,0 +1,22 @@
+BEGIN TRY
+
+BEGIN TRAN;
+
+-- AlterTable
+ALTER TABLE [dbo].[Product] ADD [brand] NVARCHAR(1000),
+[category] NVARCHAR(1000),
+[rating] FLOAT(53) NOT NULL CONSTRAINT [Product_rating_df] DEFAULT 0,
+[salesCount] INT NOT NULL CONSTRAINT [Product_salesCount_df] DEFAULT 0;
+
+COMMIT TRAN;
+
+END TRY
+BEGIN CATCH
+
+IF @@TRANCOUNT > 0
+BEGIN
+    ROLLBACK TRAN;
+END;
+THROW
+
+END CATCH

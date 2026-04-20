@@ -24,6 +24,8 @@ const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/notifications', notificationRoutes);
 const orderRoutes = require('./routes/orderRoutes')
 app.use('/api/orders', orderRoutes)
+const preferenceRoutes = require('./routes/preferenceRoutes');
+app.use('/preferences', preferenceRoutes);
 
 // Health check
 app.get('/', (req, res) => {
