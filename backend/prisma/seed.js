@@ -40,8 +40,8 @@ async function main() {
         data:
         {
             //id autoincremensts in schema.prisma
-            orderId: faker.number.int({min:1,max:5}),
-            productId:faker.number.int({ min: 1, max: 10}),
+            orderId: faker.number.int({min:1,max:3}),
+            productId:faker.number.int({ min: 1, max: 5}),
             quantity: faker.number.int({ min: 1, max: 5 }),
             price: parseFloat(faker.commerce.price({min: 5, max:500})), // added data for new field price 
 
@@ -92,13 +92,13 @@ async function main() {
 
 await prisma.wishlist.create({
   data:{ userId:1,
-    wishlistItems:{ create:[{productId:1 }, {productId:3 }, {productId:5}]}
+    items:{ create:[{productId:1 }, {productId:3 }, {productId:5}]}
   }
 })
   
 await prisma.wishlist.create({
   data:{ userId:2,
-    wishlistItems:{ create:[{productId:2 }, {productId:4 }, {productId:6}]}
+    items:{ create:[{productId:2 }, {productId:4 }, {productId:6}]}
   }
 })
 
