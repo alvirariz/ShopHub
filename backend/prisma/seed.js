@@ -6,17 +6,16 @@ const prisma = new PrismaClient() // this creates a connection now through prism
 async function main() {
 
  // create fake users
-  const users = [
-    { name: "Alex Green", email: "alex@example.com", password: "password123", role: "customer" },
-    { name: "Sara Khan", email: "sara@example.com", password: "password123", role: "customer" },
-    { name: "Ali Ahmed", email: "ali@example.com", password: "password124", role: "customer" },
-    { name: "Zara Malik", email: "zara@example.com", password: "password123", role: "customer" },
-    { name: "Omar Siddiqui", email: "omar@example.com", password: "password123", role: "storeOwner" },
-  ]
-
-  for (const user of users) {
-    await prisma.user.create({ data: user })
-  }
+ for (let i = 0; i < 10; i++) {
+  await prisma.user.create({
+    data: {
+      name: faker.person.fullName(),
+      email: faker.internet.email() + i + Date.now(), // UNIQUE or we riot
+      password: faker.internet.password(),
+      role: faker.helpers.arrayElement(["customer", "storeOwner"]),
+    }
+  })
+}
 
   for (let i = 0; i < 200; i++) {
     await prisma.product.create({
@@ -40,7 +39,7 @@ async function main() {
     await prisma.order.create({
       data: {
         status: faker.helpers.arrayElement(['pending', 'delivered', 'cancelled']),
-        customerId: faker.number.int({ min: 1, max: 10 }),
+        customerId: faker.number.int({ min: 1, max: 5 }),
         shippingAddress: faker.location.streetAddress(), 
         shippingMethod: faker.helpers.arrayElement(['standard', 'express', 'overnight']), 
         total: parseFloat(faker.commerce.price({min:50, max:1000})), 
@@ -65,13 +64,18 @@ async function main() {
 
   }
 
-    for (let i = 0; i < 5; i++) {
-        const cart = await prisma.cart.create({
-            data: {
-                userId:    i + 1,
-                isDeleted: false,
-            }
-        });
+    const users = await prisma.user.findMany()
+
+    for (const user of users) {
+      const cart = await prisma.cart.upsert({
+      where: { userId: user.id },
+      update: {}, // do nothing if exists
+      create: {
+      userId: user.id,
+      isDeleted: false,
+      }
+    })
+    
 
         for (let j = 0; j < faker.number.int({ min: 1, max: 4 }); j++) {
             await prisma.cartItem.create({
@@ -97,7 +101,7 @@ async function main() {
         isRead: faker.datatype.boolean(),
         createdAt: faker.date.recent(),
         
-        userId: faker.number.int({min:1,max: 5}),
+        userId: users[i].id,
       }
     })
   }
@@ -117,24 +121,19 @@ await prisma.wishlist.create({
 })
 
     // added data for reviews with diff ratings and products
-    const reviews = [
-      {customerId: 1, productId: 1, rating: 5, title: "Great product!", body: "I loved it! Highly recommend."},
-      { customerId: 2, productId: 2,  rating: 4, title: 'Very Good',       body: 'Good quality, fast delivery.' },
-      { customerId: 3, productId: 3,  rating: 3, title: 'Average',         body: 'It was okay, nothing special.' },
-      { customerId: 4, productId: 4,  rating: 5, title: 'Love it!',        body: 'Exceeded my expectations.' },
-      { customerId: 5, productId: 5,  rating: 2, title: 'Disappointing',   body: 'Did not match the description.' },
-      { customerId: 1, productId: 6,  rating: 4, title: 'Good buy',        body: 'Worth the price.' },
-      { customerId: 2, productId: 7,  rating: 5, title: 'Perfect!',        body: 'Exactly what I needed.' },
-      { customerId: 3, productId: 8,  rating: 1, title: 'Terrible',        body: 'Broke after one use.' },
-      { customerId: 4, productId: 9,  rating: 3, title: 'Decent',          body: 'Nothing to complain about.' },
-      { customerId: 5, productId: 10, rating: 4, title: 'Pretty good',     body: 'Would recommend to others.' },
-    ]
+   const products = await prisma.product.findMany()
 
-    for (const review of reviews){
-      await prisma.review.create({
-        data: review
-      })
+for (let i = 0; i < 10; i++) {
+  await prisma.review.create({
+    data: {
+      customerId: faker.helpers.arrayElement(users).id,
+      productId: faker.helpers.arrayElement(products).id,
+      rating: faker.number.int({ min: 1, max: 5 }),
+      title: faker.lorem.words(2),
+      body: faker.lorem.sentence(),
     }
+  })
+}
 
     console.log("Database seeded with fake data successfully!");
 }
