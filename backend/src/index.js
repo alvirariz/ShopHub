@@ -14,6 +14,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
+const reviewRoutes = require('./routes/reviewRoutes');
+app.use('/api/reviews', reviewRoutes);
 const productRoutes = require('./routes/productRoutes');
 app.use('/api/products', productRoutes);
 const cartRoutes = require('./routes/cartRoutes');
