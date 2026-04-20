@@ -1,15 +1,16 @@
-const { PrismaClient } = require('@prisma/client')
-const { faker } = require('@faker-js/faker')
+const { PrismaClient } = require('@prisma/client') // require means import prisma client talks to our db
+const { faker } = require('@faker-js/faker') // faker lib to generate fake data
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient() // this creates a connection now through prisma we can create update read etc
 
 async function main() {
 
+  // create fake users
   for (let i = 0; i < 10; i++) {
     await prisma.user.create({
       data: {
         name: faker.person.fullName(),
-        email: faker.internet.email() + i + Date.now(),
+        email: faker.internet.email() + i + Date.now(), // UNIQUE or we riot
         password: faker.internet.password(),
         role: faker.helpers.arrayElement(["customer", "storeOwner"]),
       }
@@ -37,6 +38,7 @@ async function main() {
   const products = await prisma.product.findMany()
   const productIds = products.map(p => p.id)
 
+  // added shipping address, methods, total
   const createdOrders = []
   for (let i = 0; i < 5; i++) {
     const order = await prisma.order.create({
@@ -45,7 +47,7 @@ async function main() {
         customerId: faker.helpers.arrayElement(userIds),
         shippingAddress: faker.location.streetAddress(),
         shippingMethod: faker.helpers.arrayElement(['standard', 'express', 'overnight']),
-        total: parseFloat(faker.commerce.price({ min: 50, max: 1000 })),
+        total: parseFloat(faker.commerce.price({min: 50, max: 1000})),
       }
     })
     createdOrders.push(order)
@@ -56,10 +58,11 @@ async function main() {
   for (let i = 0; i < 5; i++) {
     await prisma.orderItem.create({
       data: {
+        //id autoincrements in schema.prisma
         orderId: faker.helpers.arrayElement(orderIds),
         productId: faker.helpers.arrayElement(productIds),
         quantity: faker.number.int({ min: 1, max: 5 }),
-        price: parseFloat(faker.commerce.price({ min: 5, max: 500 })),
+        price: parseFloat(faker.commerce.price({min: 5, max: 500})), // added data for new field price
       }
     })
   }
@@ -67,7 +70,7 @@ async function main() {
   for (const user of users) {
     const cart = await prisma.cart.upsert({
       where: { userId: user.id },
-      update: {},
+      update: {}, // do nothing if exists
       create: {
         userId: user.id,
         isDeleted: false,
@@ -116,6 +119,7 @@ async function main() {
     })
   }
 
+  // added data for reviews with diff ratings and products
   for (let i = 0; i < 10; i++) {
     await prisma.review.create({
       data: {
@@ -128,9 +132,10 @@ async function main() {
     })
   }
 
-  console.log("Database seeded with fake data successfully!")
+  console.log("Database seeded with fake data successfully!");
 }
 
+
 main()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect())
+  .catch(console.error) // if something goes wrong will print error in terminal
+  .finally(() => prisma.$disconnect()) //good practice after done close the prisma connection
