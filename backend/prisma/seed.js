@@ -15,11 +15,15 @@ async function main() {
     })
   }
 
+  // added shipping address, methods, total 
   for (let i = 0; i < 5; i++) {
     await prisma.order.create({
       data: {
         status: faker.helpers.arrayElement(['pending', 'delivered', 'cancelled']),
         customerId: faker.number.int({ min: 1, max: 10 }),
+        shippingAddress: faker.location.streetAddress(), 
+        shippingMethod: faker.helpers.arrayElement(['standard', 'express', 'overnight']), 
+        total: parseFloat(faker.commerce.price({min:50, max:1000})), 
       }
     })
   }
@@ -33,6 +37,7 @@ async function main() {
             orderId: faker.number.int({min:1,max:5}),
             productId:faker.number.int({ min: 1, max: 10}),
             quantity: faker.number.int({ min: 1, max: 5 }),
+            price: parseFloat(faker.commerce.price({min: 5, max:500})), // added data for new field price 
 
         }
 
@@ -90,6 +95,27 @@ await prisma.wishlist.create({
     wishlistItems:{ create:[{productId:2 }, {productId:4 }, {productId:6}]}
   }
 })
+
+    // added data for reviews with diff ratings and products
+    const reviews = [
+      {customerId: 1, productId: 1, rating: 5, title: "Great product!", body: "I loved it! Highly recommend."},
+      { customerId: 2, productId: 2,  rating: 4, title: 'Very Good',       body: 'Good quality, fast delivery.' },
+      { customerId: 3, productId: 3,  rating: 3, title: 'Average',         body: 'It was okay, nothing special.' },
+      { customerId: 4, productId: 4,  rating: 5, title: 'Love it!',        body: 'Exceeded my expectations.' },
+      { customerId: 5, productId: 5,  rating: 2, title: 'Disappointing',   body: 'Did not match the description.' },
+      { customerId: 1, productId: 6,  rating: 4, title: 'Good buy',        body: 'Worth the price.' },
+      { customerId: 2, productId: 7,  rating: 5, title: 'Perfect!',        body: 'Exactly what I needed.' },
+      { customerId: 3, productId: 8,  rating: 1, title: 'Terrible',        body: 'Broke after one use.' },
+      { customerId: 4, productId: 9,  rating: 3, title: 'Decent',          body: 'Nothing to complain about.' },
+      { customerId: 5, productId: 10, rating: 4, title: 'Pretty good',     body: 'Would recommend to others.' },
+    ]
+
+    for (const review of reviews){
+      await prisma.review.create({
+        data: review
+      })
+    }
+    
     console.log("Database seeded with fake data successfully!");
 }
 
