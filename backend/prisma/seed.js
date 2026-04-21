@@ -119,6 +119,29 @@ async function main() {
     })
   }
 
+
+  // store applicationns for store owners waiting for admin review
+const owners = await prisma.user.findMany({ where: { role: 'storeOwner' } });
+
+if (owners.length > 0) 
+{
+  for (const owner of owners) 
+  {
+    await prisma.storeApplication.create(
+    {
+      data: {
+        ownerId: owner.id,
+        storeName: faker.company.name(), 
+        businessType: faker.helpers.arrayElement(['Electronics', 'Fashion', 'Home Decor', 'Groceries']),
+        address: faker.location.streetAddress() + ", " + faker.location.city(),
+        documents: faker.internet.url() + "/verification.pdf",
+        status: "pending" 
+      }
+    }
+    );
+  }
+
+}
   // added data for reviews with diff ratings and products
   for (let i = 0; i < 10; i++) {
     await prisma.review.create({
