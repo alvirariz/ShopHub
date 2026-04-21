@@ -160,7 +160,135 @@ const viewLowStockAlerts = async (req, ans) => {
   }
 }
 
+const addProduct = async (req, res) => {
+    const { name, price, category, brand, stock, storeId } = req.body;
+    
+    try {
+        // Validation
+        if (!name || !price || !category || !stock) {
+            return res.status(400).json({ 
+                message: "Missing required fields: name, price, category, stock" 
+            });
+        }
+        
+        const product = await prisma.Product.create({
+            data: {
+                name,
+                price: parseFloat(price),
+                category,
+                brand: brand || "",
+                stock: parseInt(stock),
+                storeId: parseInt(storeId),
+                rating: 0,
+                salesCount: 0,
+                
+                isDeleted: false,
+                isWithdrawn: false
+            }
+        });
+        
+        return res.status(201).json({ 
+            message: "Product added successfully", 
+            product 
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error adding product",
+            error: error.message
+        });
+    }
+};
 
-module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts} //making this func public for toher files to access
+const editProduct = async (req, res) => {
+    const { productId } = req.params;
+    const updates = req.body;
+    
+    try {
+        // Check if product exists
+        const product = await prisma.Product.findUnique({
+            where: { id: parseInt(productId) }
+        });
+        
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
+        
+        
+        if (updates.price) updates.price = parseFloat(updates.price);
+        if (updates.stock) updates.stock = parseInt(updates.stock);
+        
+        const updated = await prisma.Product.update({
+            where: { id: parseInt(productId) },
+            data: updates
+        });
+        
+        return res.json({ 
+            message: "Product updated successfully", 
+            product: updated 
+        });
+        
+    } catch (error) {
+        return res.status(500).json({
+            message: "Error updating product",
+            error: error.message
+        });
+    }
+};
+
+
+// Sorted Products 
+const sortProducts = async (req, res) => {
+    try {
+        const { sortBy, order } = req.query; // read the sort option
+        const sortOptions = {
+            price: 'price',
+            rating: 'rating',
+            popularity: 'salesCount'
+        }
+        if (!sortOptions[sortBy])
+        {
+            return res.status(400).json({ message: "Invalid sort option. Use 'price', 'rating', or 'popularity'." });
+        }
+        const products = await prisma.product.findMany({
+            where: { isDeleted: false, isWithdrawn: false },
+            orderBy: { [sortOptions[sortBy]]: order === 'desc' ? 'desc' : 'asc' }
+        });
+        res.status(200).json({ products });
+
+    }
+    catch(error)
+    { return res.status(500).json({message: "Error updating product",error: error.message});}
+};
+
+
+// Get product details
+const getProductDetails = async (req, res) => {
+ try{
+    const {productId} = req.params  // product id for which details are needed
+
+    const product = await prisma.product.findUnique({
+        where: { id: parseInt(productId) },
+        include: {reviews: { orderBy: { createdAt: 'desc' } } // include reviews of the product 
+        }
+    })
+
+    if(!product)  // incase product not exist 
+    {return res.status(404).jason ({message: "Product not found"})}
+
+    if(product.isDeleted || product.isWithdrawn) // incase product deleted or withdrawn
+    {return res.status(404).jason ({message: "Product not available"})}
+      
+    
+    res.status(200).json(product)
+ }
+ catch(error){
+   return  res.status(500).json({message: "Error fetching product details", error: error.message})
+ }
+
+
+};
+
+module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts,addProduct,editProduct , sortProducts , getProductDetails} //making this func public for toher files to access
 
 

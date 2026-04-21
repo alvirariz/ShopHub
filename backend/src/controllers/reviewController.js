@@ -6,7 +6,7 @@ const writeReview = async (req, res) => {
         const {customerId, productId, rating, title, body} = req.body;
 
         // verify that customer exists 
-        const customer = await prisma.customer.findUnique({where:{id:customerId}});
+        const customer = await prisma.user.findUnique({where:{id:customerId}});
         if(!customer){
             return res.status(404).json({message:'Customer not found'});
         }
@@ -114,3 +114,5 @@ module.exports = {
     writeReview,
     getProductReviews
 }
+
+// fix customer model reference to user in review controller 
