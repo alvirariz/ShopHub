@@ -79,20 +79,22 @@ model Notification {
 }
 
 model Wishlist {
- id  Int  @id @default(autoincrement())
- userId    Int @unique
- createdAt DateTime @default(now())
- items    WishlistItem[]
+ id        Int        @id @default(autoincrement())
+ userId    Int        @unique
+ createdAt DateTime   @default(now())
 
+ items     WishlistItem[]
+ user     User       @relation(fields: [userId], references: [id])
 }
 
 model WishlistItem {
-    id Int @id @default(autoincrement())
+    id         Int      @id @default(autoincrement())
     wishlistId Int 
-    productId Int 
-    addedAt DateTime @default(now())
-    wishlist Wishlist @relation(fields: [wishlistId], references: [id])
-    product Product @relation(fields: [productId], references: [id])
+    productId  Int 
+    addedAt    DateTime @default(now())
+
+    wishlist   Wishlist     @relation(fields: [wishlistId], references: [id])
+    product    Product      @relation(fields: [productId], references: [id])
 }
 
 model UserPreference {
@@ -127,4 +129,23 @@ model User {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
   isSuspended Boolean @default(false)
+
+  notifications     Notification[]
+  userPreference    UserPreference?
+  wishlist          Wishlist?
+  storeApplications  StoreApplication[]
+}
+
+model StoreApplication {
+  id             Int        @id @default(autoincrement())
+  ownerId        Int
+  storeName      String 
+  businessType   String 
+  address        String 
+  documents      String 
+  status         String     @default("pending") 
+  createdAt      DateTime  @default(now())
+  rejectionReason String?
+
+  owner User @relation(fields: [ownerId], references: [id])
 }
