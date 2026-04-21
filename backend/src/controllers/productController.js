@@ -237,8 +237,58 @@ const editProduct = async (req, res) => {
 };
 
 
+// Sorted Products 
+const sortProducts = async (req, res) => {
+    try {
+        const { sortBy, order } = req.query; // read the sort option
+        const sortOptions = {
+            price: 'price',
+            rating: 'rating',
+            popularity: 'salesCount'
+        }
+        if (!sortOptions[sortBy])
+        {
+            return res.status(400).json({ message: "Invalid sort option. Use 'price', 'rating', or 'popularity'." });
+        }
+        const products = await prisma.product.findMany({
+            where: { isDeleted: false, isWithdrawn: false },
+            orderBy: { [sortOptions[sortBy]]: order === 'desc' ? 'desc' : 'asc' }
+        });
+        res.status(200).json({ products });
+
+    }
+    catch(error)
+    { return res.status(500).json({message: "Error updating product",error: error.message});}
+};
 
 
-module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts,addProduct,editProduct} //making this func public for toher files to access
+// Get product details
+const getProductDetails = async (req, res) => {
+ try{
+    const {productId} = req.params  // product id for which details are needed
+
+    const product = await prisma.product.findUnique({
+        where: { id: parseInt(productId) },
+        include: {reviews: { orderBy: { createdAt: 'desc' } } // include reviews of the product 
+        }
+    })
+
+    if(!product)  // incase product not exist 
+    {return res.status(404).jason ({message: "Product not found"})}
+
+    if(product.isDeleted || product.isWithdrawn) // incase product deleted or withdrawn
+    {return res.status(404).jason ({message: "Product not available"})}
+      
+    
+    res.status(200).json(product)
+ }
+ catch(error){
+   return  res.status(500).json({message: "Error fetching product details", error: error.message})
+ }
+
+
+};
+
+module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts,addProduct,editProduct , sortProducts , getProductDetails} //making this func public for toher files to access
 
 
