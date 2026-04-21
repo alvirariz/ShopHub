@@ -5,16 +5,15 @@ const prisma = new PrismaClient()
 // Adding product to wishlist
 const addToWishlist = async (req, res) => {
     try {
-        const { userId, productId } = req.body   // get userId and productId from request body
-
-        // check if product actually exists in db
+        const { userId, productId } = req.body   // get userId and productId 
+        // check if product exists and is available
         const product = await prisma.product.findUnique({ where: { id: parseInt(productId) } })
 
         if (!product || product.isDeleted || product.isWithdrawn) {
             return res.status(404).json({ message: 'Product not available' })
         }
 
-        // find user wishlist if not create one 
+         
         let wishlist = await prisma.wishlist.findUnique({ where: { userId: parseInt(userId) } })
 
         if (!wishlist) {
@@ -68,7 +67,7 @@ const removeFromWishlist = async (req, res) => {
                 productId: parseInt(productId)
             }
         })
-          // product don't exist 
+          // product dont exist 
         if (!wishlistItem) {
             return res.status(404).json({ message: 'Product not found in wishlist' })
         }

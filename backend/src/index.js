@@ -14,6 +14,8 @@ app.use((req, res, next) => {
 });
 
 // Routes
+const wishlistRoutes = require('./routes/wishlistRoutes');
+app.use('/api/wishlist', wishlistRoutes);
 const reviewRoutes = require('./routes/reviewRoutes');
 app.use('/api/reviews', reviewRoutes);
 const productRoutes = require('./routes/productRoutes');
@@ -28,6 +30,7 @@ const preferenceRoutes = require('./routes/preferenceRoutes');
 app.use('/api/preferences', preferenceRoutes);
 const adminRoutes = require('./routes/adminRoutes')
 app.use('/api/admin', adminRoutes)
+
 // Health check
 app.get('/', (req, res) => {
   res.json({ 

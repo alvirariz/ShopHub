@@ -8,7 +8,9 @@ const {
     updateStockQuantity,
     viewLowStockAlerts,
     addProduct,
-    editProduct
+    editProduct,
+    sortProducts,
+    getProductDetails
 } = require('../controllers/productController');
 
 // Compare products
@@ -26,5 +28,11 @@ router.put('/:productId/withdraw',withdrawProduct)
 router.put('/:productId/stock',updateStockQuantity)
 //uc:31 view low stock quantity
 router.get('/low-stock', viewLowStockAlerts)
+
+//UC:08 Sort Products 
+router.get('/', sortProducts )     
+
+//UC:14 Get Product Details
+router.get('/:productId', getProductDetails) 
 
 module.exports=router
