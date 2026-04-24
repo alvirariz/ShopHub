@@ -10,9 +10,11 @@ const {
     addProduct,
     editProduct,
     sortProducts,
-    getProductDetails
+    getProductDetails,
+    browseProducts,
+    searchProducts,
+    filterProducts
 } = require('../controllers/productController');
-
 // Compare products
 router.get('/compare', compareProducts);
 
@@ -34,5 +36,12 @@ router.get('/', sortProducts )
 
 //UC:14 Get Product Details
 router.get('/:productId', getProductDetails) 
+
+//uc5 Browse Products
+router.get('/browse', browseProducts)
+//uc6 Search Products
+router.get('/search', searchProducts)
+// uc 7 Filter Products
+router.get('/filter', filterProducts)
 
 module.exports=router

@@ -289,6 +289,93 @@ const getProductDetails = async (req, res) => {
 
 };
 
-module.exports = {withdrawProduct, compareProducts,updateStockQuantity,viewLowStockAlerts,addProduct,editProduct , sortProducts , getProductDetails} //making this func public for toher files to access
+//uc5: Browse Products
+const browseProducts = async (req, res) => {
+  try {
+    const { category, storeId } = req.query
 
+    const filters = { isDeleted: false, isWithdrawn: false }
+
+    if (category) filters.category = category
+    if (storeId) filters.storeId = parseInt(storeId)
+
+    const products = await prisma.product.findMany({
+      where: filters
+    })
+
+    if (products.length === 0) {
+      return res.status(200).json({ message: "No products available" })
+    }
+
+    res.status(200).json({ count: products.length, products })
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error })
+  }
+}
+
+//uc 6 Search Products
+const searchProducts = async (req, res) => {
+  try {
+    const { keyword } = req.query
+
+    if (!keyword) {
+      return res.status(400).json({ message: "Please enter a search keyword" })
+    }
+
+    const products = await prisma.product.findMany({
+      where: {
+        isDeleted: false,
+        isWithdrawn: false,
+        OR: [
+          { name: { contains: keyword } },
+          { category: { contains: keyword } },
+          { brand: { contains: keyword } }
+        ]
+      }
+    })
+
+    if (products.length === 0) {
+      return res.status(200).json({ message: "No results found for your search" })
+    }
+
+    res.status(200).json({ count: products.length, products })
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error })
+  }
+}
+
+//uc7 filter products
+const filterProducts = async (req, res) => {
+  try {
+    const { minPrice, maxPrice, brand, rating, category } = req.query
+
+    const filters = { isDeleted: false, isWithdrawn: false }
+
+    if (category) filters.category = category
+    if (brand) filters.brand = brand
+    if (rating) filters.rating = { gte: parseFloat(rating) }
+    if (minPrice || maxPrice) {
+      filters.price = {}
+      if (minPrice) filters.price.gte = parseFloat(minPrice)
+      if (maxPrice) filters.price.lte = parseFloat(maxPrice)
+    }
+
+    const products = await prisma.product.findMany({
+      where: filters
+    })
+
+    if (products.length === 0) {
+      return res.status(200).json({ message: "No products match your selected filters" })
+    }
+
+    res.status(200).json({ count: products.length, products })
+
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong", error })
+  }
+}
+
+module.exports = { withdrawProduct, compareProducts, updateStockQuantity, viewLowStockAlerts, addProduct, editProduct, sortProducts, getProductDetails, browseProducts, searchProducts, filterProducts }
 
