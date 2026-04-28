@@ -155,6 +155,16 @@ if (owners.length > 0)
     })
   }
 
+const allProducts = await prisma.product.findMany()
+await prisma.productView.createMany({
+  data: Array.from({ length: 30 }, () => ({
+    productId: faker.helpers.arrayElement(allProducts).id,
+    customerId: faker.number.int({ min: 1, max: 10 }),
+    viewedAt: faker.date.recent({ days: 30 })
+  }))
+})
+
+
   console.log("Database seeded with fake data successfully!");
 }
 
