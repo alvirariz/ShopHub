@@ -32,6 +32,8 @@ const preferenceRoutes = require('./routes/preferenceRoutes');
 app.use('/api/preferences', preferenceRoutes);
 const adminRoutes = require('./routes/adminRoutes')
 app.use('/api/admin', adminRoutes)
+const storeOwnerRoutes = require('./routes/storeOwnerRoutes')
+app.use('/api/storeowner', storeOwnerRoutes)
 
 // Health check
 app.get('/', (req, res) => {
