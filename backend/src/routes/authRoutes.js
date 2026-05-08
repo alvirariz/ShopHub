@@ -1,17 +1,20 @@
-const express = require('express')
-const router = express.Router()
-const { registerCustomer, registerStoreOwner, login, logout } = require('../controllers/authController')
+const express = require('express');
+const router = express.Router();
+const { authenticate } = require('../middleware/authMiddleware');
 
-// uc 1
-router.post('/register-customer', registerCustomer)
+const { 
+    registerCustomer, 
+    registerStoreOwner, 
+    login, 
+    logout 
+} = require('../controllers/authController');
 
-//uc2
-router.post('/register-store-owner', registerStoreOwner)
+// PUBLIC ROUTES (no authentication needed)
+router.post('/register-customer', registerCustomer);        
+router.post('/register-store-owner', registerStoreOwner); 
+router.post('/login', login);                               
 
-//uc3
-router.post('/login', login)
+// AUTHENTICATED ROUTES (optional - logout can work without auth too)
+router.post('/logout', authenticate, logout);               
 
-// uc4
-router.post('/logout', logout)
-
-module.exports = router
+module.exports = router;

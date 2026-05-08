@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
+const { authenticate } = require('../middleware/authMiddleware');
+const { isCustomer } = require('../middleware/roleMiddleware');
+
 const { savePreferences, getRecommendations } = require('../controllers/preferenceController');
 
-// UC-25: Save preferences
-router.post('/:userId', savePreferences);
-
-// UC-26: Get recommendations
-router.get('/:userId/recommendations', getRecommendations);
+// Only customers have preferences
+router.post('/:userId', authenticate, isCustomer, savePreferences);                 // UC-25: Complete Preference Questionnaire
+router.get('/:userId/recommendations', authenticate, isCustomer, getRecommendations); // UC-26: View Personalized Recommendations
 
 module.exports = router;
