@@ -146,6 +146,10 @@ const manageApplication = async (req, res) => {
         where: { id: parseInt(applicationId) },
         data: { status: 'approved' }
     })
+    await prisma.user.update({
+        where: { id: application.ownerId },
+        data: { isActive: true }
+    });
     return res.json({message: "Application approved", application: updates})
     }
 
