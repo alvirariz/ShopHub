@@ -110,9 +110,9 @@ export default function ShoppingCartPage() {
 
   return (
     <div className="cart-page">
-      <h1 className="cart-title">Shopping Cart</h1>
-
-      <div className="cart-banner" aria-hidden="true" />
+      <div className="customer-banner-header">
+        <h1>Shopping Cart</h1>
+      </div>
 
       <div className="cart-card">
         {loading ? (

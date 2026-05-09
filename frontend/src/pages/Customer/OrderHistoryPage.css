@@ -212,3 +212,30 @@
   color: #666;
   font-size: 18px;
 }
+
+@media (max-width: 768px) {
+  .order-history-page {
+    padding: 1.5rem 1rem;
+  }
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+  .order-footer {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+  }
+  .track-btn {
+    width: auto;
+    text-align: center;
+  }
+  .order-item-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .order-item-price {
+    margin-left: 0;
+  }
+}

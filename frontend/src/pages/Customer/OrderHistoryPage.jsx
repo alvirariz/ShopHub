@@ -64,7 +64,9 @@ export default function OrderHistoryPage() {
 
   return (
     <div className="order-history-page">
-      <h1 className="page-title">Order History</h1>
+      <div className="customer-banner-header">
+        <h1>Order History</h1>
+      </div>
 
       {orders.length === 0 ? (
         <div className="empty-state">You haven't placed any orders yet.</div>
@@ -109,7 +111,7 @@ export default function OrderHistoryPage() {
                   {order.status.toLowerCase() === 'pending' && (
                     <button 
                       className="track-btn"
-                      style={{backgroundColor:'#dc3545'}}
+                      style={{backgroundColor:'#e57373', color: '#fff'}}
                       onClick={() => handleCancelOrder(order.id)}
                     >
                       Cancel Order
