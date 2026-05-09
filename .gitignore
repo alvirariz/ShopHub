@@ -137,3 +137,6 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+clean_pdf.txt
+pdf_content_utf8.txt
+pdf_content.txt

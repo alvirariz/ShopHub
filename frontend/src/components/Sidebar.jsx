@@ -6,6 +6,7 @@ const NAV_ITEMS = [
   { label: 'For You Page', path: '/for-you' },
   { label: 'Browse Products', path: '/products' },
   { label: 'Shopping Cart', path: '/cart' },
+  { label: 'My Wishlist', path: '/wishlist' },
   { label: 'Order History', path: '/orders' },
   { label: 'Notifications', path: '/notifications' },
 ];

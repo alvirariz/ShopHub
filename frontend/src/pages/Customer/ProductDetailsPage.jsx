@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { addToCart } from '../../services/cartService';
+import { addToWishlist } from '../../services/wishlistService';
 import { getProductDetails } from '../../services/productService';
 import { getReviewsByProduct, submitReview } from '../../services/reviewService';
 import './ProductDetailsPage.css';
@@ -69,6 +70,20 @@ export default function ProductDetailsPage() {
       alert('Failed to add item to cart: ' + (err.message || 'Unknown error'));
     } finally {
       setAddingToCart(false);
+    }
+  };
+
+  const handleAddToWishlist = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('Please log in to add to wishlist');
+        return;
+      }
+      await addToWishlist(userId, product.id);
+      alert('Added to wishlist successfully!');
+    } catch (err) {
+      alert(err.message || 'Failed to add to wishlist');
     }
   };
 
@@ -174,6 +189,12 @@ export default function ProductDetailsPage() {
               disabled={addingToCart || product.stock <= 0}
             >
               {addingToCart ? 'Adding...' : 'Add To Cart'}
+            </button>
+            <button 
+              className="add-to-wishlist-large-btn"
+              onClick={handleAddToWishlist}
+            >
+              ♡ Wishlist
             </button>
           </div>
         </div>

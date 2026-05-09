@@ -13,6 +13,7 @@ import LoginPage from './pages/Auth/LoginPage';
 import RegisterCustomerPage from './pages/Auth/RegisterCustomerPage';
 import RegisterStoreOwnerPage from './pages/Auth/RegisterStoreOwnerPage';
 import CompareProductsPage from './pages/Customer/CompareProductsPage';
+import WishlistPage from './pages/Customer/WishlistPage';
 import { CompareProvider } from './contexts/CompareContext';
 import CompareTray from './components/CompareTray';
 import AdminDashboard from './pages/Admin/AdminDashboard';
@@ -67,6 +68,7 @@ export default function App() {
           <Route path="products" element={<BrowseProductsPage />} />
           <Route path="products/:id" element={<ProductDetailsPage />} />
           <Route path="compare" element={<CompareProductsPage />} />
+          <Route path="wishlist" element={<WishlistPage />} />
           <Route path="orders" element={<OrderHistoryPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
           <Route path="auth/login" element={<LoginPage />} />
