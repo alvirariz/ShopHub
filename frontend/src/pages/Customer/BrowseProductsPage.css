@@ -1,0 +1,266 @@
+.browse-products-page {
+  padding: 2rem 4rem;
+  background-color: #FAFAFA;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+.browse-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.browse-header h1 {
+  color: #800020;
+  font-size: 32px;
+  margin: 0;
+}
+
+.search-form {
+  display: flex;
+  gap: 1rem;
+}
+
+.search-form input {
+  width: 300px;
+  padding: 10px 16px;
+  border: 1px solid #DDD;
+  border-radius: 50px;
+  font-size: 14px;
+}
+
+.search-btn {
+  background-color: #800020;
+  color: #FFF;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.filters-bar {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  overflow-x: auto;
+  padding-bottom: 1rem;
+}
+
+.filter-pill {
+  background-color: #FFF;
+  border: 1px solid #DDD;
+  border-radius: 50px;
+  padding: 8px 20px;
+  color: #555;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.filter-pill:hover, .filter-pill.active {
+  background-color: #FDF2F2;
+  border-color: #800020;
+  color: #800020;
+}
+
+.status-message {
+  text-align: center;
+  padding: 4rem;
+  font-size: 18px;
+  color: #666;
+}
+
+.status-message.error {
+  color: #D32F2F;
+}
+
+/* Reusing grid styles from ForYouPage */
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 2.5rem;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #FFF;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+}
+
+.product-image-container {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background-color: #F5F5F5;
+  border-radius: 16px 16px 0 0;
+}
+
+.product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+  transform: scale(1.05);
+}
+
+.product-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.5rem;
+}
+
+.product-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #111;
+  margin: 0 0 0.5rem 0;
+}
+
+.product-rating {
+  color: #111;
+  font-size: 12px;
+  margin-bottom: 0.5rem;
+}
+
+.product-price {
+  font-size: 18px;
+  color: #800020;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.add-to-cart-btn {
+  background-color: #FDF2F2;
+  color: #000;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.add-to-cart-btn:hover:not(:disabled) {
+  background-color: #f7e0e0;
+}
+
+.add-to-cart-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* Compare Feature Styles */
+.product-card.selected-for-compare {
+  border: 2px solid #800020;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(128, 0, 32, 0.15);
+}
+
+.product-image-container {
+  position: relative;
+}
+
+.compare-check-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #DDD;
+  border-radius: 50px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.product-card:hover .compare-check-btn {
+  opacity: 1;
+}
+
+.compare-check-btn.checked {
+  opacity: 1;
+  background-color: #800020;
+  color: #FFF;
+  border-color: #800020;
+}
+
+.floating-compare-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFF;
+  padding: 1rem 4rem;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+  border-top: 1px solid #EEE;
+}
+
+.floating-compare-bar span {
+  font-weight: 600;
+  color: #333;
+}
+
+.floating-compare-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.clear-compare-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 10px 16px;
+}
+
+.clear-compare-btn:hover {
+  color: #111;
+  text-decoration: underline;
+}
+
+.go-compare-btn {
+  background-color: #800020;
+  color: #FFF;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.go-compare-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.go-compare-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
