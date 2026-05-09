@@ -377,5 +377,29 @@ const filterProducts = async (req, res) => {
   }
 }
 
-module.exports = { withdrawProduct, compareProducts, updateStockQuantity, viewLowStockAlerts, addProduct, editProduct, sortProducts, getProductDetails, browseProducts, searchProducts, filterProducts }
+// get filter options (categories and brands)
+const getFilterOptions = async (req, res) => {
+  try {
+    const categories = await prisma.product.findMany({
+      where: { isDeleted: false, isWithdrawn: false, category: { not: null } },
+      distinct: ['category'],
+      select: { category: true }
+    });
+    
+    const brands = await prisma.product.findMany({
+      where: { isDeleted: false, isWithdrawn: false, brand: { not: null } },
+      distinct: ['brand'],
+      select: { brand: true }
+    });
+
+    res.status(200).json({
+      categories: categories.map(c => c.category).filter(Boolean),
+      brands: brands.map(b => b.brand).filter(Boolean)
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching filter options", error: error.message });
+  }
+};
+
+module.exports = { withdrawProduct, compareProducts, updateStockQuantity, viewLowStockAlerts, addProduct, editProduct, sortProducts, getProductDetails, browseProducts, searchProducts, filterProducts, getFilterOptions }
 

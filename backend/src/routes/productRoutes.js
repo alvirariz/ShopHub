@@ -14,13 +14,15 @@ const {
     getProductDetails,
     browseProducts,
     searchProducts,
-    filterProducts
+    filterProducts,
+    getFilterOptions
 } = require('../controllers/productController');
 
 // PUBLIC ROUTES (no authentication needed)
 router.get('/browse', browseProducts);                      // UC-05: Browse Products
 router.get('/search', searchProducts);                      // UC-06: Search Products
 router.get('/filter', filterProducts);                      // UC-07: Filter Products
+router.get('/filter-options', getFilterOptions);            // Fetch dynamic categories and brands
 router.get('/compare', compareProducts);                    // UC-15: Compare Products
 router.get('/:productId', getProductDetails);               // UC-14: View Product Details
 

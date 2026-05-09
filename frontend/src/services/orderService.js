@@ -14,3 +14,8 @@ export const trackOrder = async (orderId) => {
   const response = await api.get(routes.orders.track(orderId));
   return response.data;
 };
+
+export const cancelOrder = async (orderId) => {
+  const response = await api.put(routes.orders.cancel(orderId));
+  return response.data;
+};

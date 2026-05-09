@@ -110,6 +110,15 @@ const checkout = async (req, res) => {
         // clear the cart 
         await prisma.cartItem.deleteMany({where:{cartId: cart.id}});
 
+        // create notification for the customer
+        await prisma.Notification.create({
+            data: {
+                message: `Your order #${order.id} has been placed successfully!`,
+                type: 'order',
+                userId: userId
+            }
+        });
+
         //return order confirmation 
         res.status(201).json({
             message:'Order placed successfully', 
@@ -252,4 +261,51 @@ const trackOrderStatus = async(req, res) => {
     }
 }
 
-module.exports = { viewIncomingOrders,viewSpecificOrders, checkout, viewOrderHistory, trackOrderStatus, updateOrderStatus }
+// cancel order
+const cancelOrder = async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        
+        const order = await prisma.order.findUnique({
+            where: { id: parseInt(orderId) },
+            include: { items: { include: { product: true } } }
+        });
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        if (order.status !== 'pending') {
+            return res.status(400).json({ message: "Only pending orders can be cancelled." });
+        }
+
+        // Restore stock
+        for (const item of order.items) {
+            await prisma.product.update({
+                where: { id: item.productId },
+                data: { stock: item.product.stock + item.quantity }
+            });
+        }
+
+        // Update status
+        const updatedOrder = await prisma.order.update({
+            where: { id: parseInt(orderId) },
+            data: { status: 'cancelled' }
+        });
+
+        // Notify user
+        await prisma.Notification.create({
+            data: {
+                message: `Your order #${order.id} has been cancelled successfully.`,
+                type: 'order',
+                userId: order.customerId
+            }
+        });
+
+        res.status(200).json({ message: "Order cancelled successfully", order: updatedOrder });
+    } catch (error) {
+        res.status(500).json({ message: "Error cancelling order", error: error.message });
+    }
+}
+
+module.exports = { viewIncomingOrders,viewSpecificOrders, checkout, viewOrderHistory, trackOrderStatus, updateOrderStatus, cancelOrder }

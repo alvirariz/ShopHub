@@ -9,13 +9,15 @@ const {
     checkout, 
     viewOrderHistory,
     trackOrderStatus,
-    updateOrderStatus
+    updateOrderStatus,
+    cancelOrder
 } = require('../controllers/orderController');
 
 // Customer routes
 router.post('/checkout', authenticate, isCustomer, checkout);                       // UC-18: Checkout
 router.get('/history/:userId', authenticate, isCustomer, viewOrderHistory);         // UC-19: View Order History
 router.get('/track/:orderId', authenticate, isCustomer, trackOrderStatus);          // UC-20: Track Order Status
+router.put('/:orderId/cancel', authenticate, isCustomer, cancelOrder);              // Cancel Order
 
 // Store owner routes
 router.get('/view', authenticate, isStoreOwner, viewIncomingOrders);                // UC-32: View Incoming Orders
