@@ -14,6 +14,7 @@ export default function Sidebar() {
   const navigate = useNavigate();
 
   const isLoggedIn = !!localStorage.getItem('token');
+  const userRole = localStorage.getItem('userRole');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -40,7 +41,6 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
       <div className="sidebar-divider" role="separator" />
 
       <div className="sidebar-bottom">

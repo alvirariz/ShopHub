@@ -69,14 +69,39 @@ const getPlatformMetrics = async (req, res) => {
             where: { createdAt: { gte: oneDayAgo } }
         });
         
+        // Mock graph data matching Figma
+        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        const monthlySales = months.map(month => ({
+            name: month,
+            sales: Math.floor(Math.random() * 50) + 10,
+            revenue: Math.floor(Math.random() * 5000) + 1000
+        }));
+        
+        const recentBarData = [
+            { name: 'May 03', value: 8 },
+            { name: 'May 05', value: 5 },
+            { name: 'May 08', value: 4 },
+            { name: 'May 12', value: 3 },
+            { name: 'May 15', value: 6 },
+            { name: 'May 19', value: 8 },
+            { name: 'May 22', value: 9 },
+            { name: 'May 27', value: 4 },
+            { name: 'May 29', value: 6 },
+            { name: 'May 31', value: 6 }
+        ];
+
         return res.json({
             metrics: {
                 totalUsers,
                 totalOrders,
                 totalProducts,
-                totalRevenue: totalRevenue._sum.totalAmount || 0,
+                totalRevenue: totalRevenue._sum.total || 0,
                 recentUsers,
                 recentOrders
+            },
+            graphs: {
+                monthlySales,
+                recentActivity: recentBarData
             },
             timestamp: new Date().toISOString()
         });
@@ -86,6 +111,56 @@ const getPlatformMetrics = async (req, res) => {
             message: "Error fetching platform metrics",
             error: error.message
         });
+    }
+};
+
+// Get User Details
+const getUserDetails = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await prisma.user.findUnique({
+            where: { id: parseInt(userId) }
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const orders = await prisma.order.findMany({
+            where: { customerId: parseInt(userId) },
+            orderBy: { createdAt: 'desc' }
+        });
+
+        const totalOrders = orders.length;
+        const totalSpent = orders.reduce((sum, order) => sum + (order.total || 0), 0);
+        const lastOrderDate = totalOrders > 0 ? orders[0].createdAt : null;
+
+        const wishlist = await prisma.wishlist.findUnique({
+            where: { userId: parseInt(userId) },
+            include: { items: true }
+        });
+        const wishlistCount = wishlist ? wishlist.items.length : 0;
+
+        const reviewsCount = await prisma.review.count({
+            where: { customerId: parseInt(userId) }
+        });
+
+        return res.json({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            isActive: user.isActive,
+            isSuspended: user.isSuspended,
+            createdAt: user.createdAt,
+            totalOrders,
+            totalSpent,
+            lastOrderDate,
+            wishlistCount,
+            reviewsCount
+        });
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching user details", error: error.message });
     }
 };
 
@@ -212,4 +287,4 @@ const searchUsers = async (req , res ) =>
 
 
 
-module.exports = {manageUserStatus,getPlatformMetrics, getPendingApplications, getApplicationById, manageApplication, searchUsers }
+module.exports = {manageUserStatus,getPlatformMetrics, getPendingApplications, getApplicationById, manageApplication, searchUsers, getUserDetails }

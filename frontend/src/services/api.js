@@ -89,6 +89,7 @@ export const routes = {
   admin: {
     metrics: '/admin/metrics',
     userStatus: (userId) => `/admin/users/${userId}/status`,
+    userDetails: (userId) => `/admin/users/${userId}`,
     applications: '/admin/applications',
     applicationDetails: (applicationId) => `/admin/applications/${applicationId}`,
     manageApplication: (applicationId) => `/admin/applications/${applicationId}`,

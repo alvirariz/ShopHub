@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import AdminSidebar from './components/AdminSidebar';
 import ShoppingCartPage from './pages/Customer/ShoppingCartPage';
 import ForYouPage from './pages/Customer/ForYouPage';
 import ProductDetailsPage from './pages/Customer/ProductDetailsPage';
@@ -14,6 +15,11 @@ import RegisterStoreOwnerPage from './pages/Auth/RegisterStoreOwnerPage';
 import CompareProductsPage from './pages/Customer/CompareProductsPage';
 import { CompareProvider } from './contexts/CompareContext';
 import CompareTray from './components/CompareTray';
+import AdminDashboard from './pages/Admin/AdminDashboard';
+import AdminManageUsers from './pages/Admin/AdminManageUsers';
+import AdminUserDetails from './pages/Admin/AdminUserDetails';
+import AdminStoreApplications from './pages/Admin/AdminStoreApplications';
+import AdminLogin from './pages/Admin/AdminLogin';
 import './App.css';
 
 function Layout() {
@@ -24,6 +30,17 @@ function Layout() {
         <Outlet />
       </main>
       <CompareTray />
+    </div>
+  );
+}
+
+function AdminLayout() {
+  return (
+    <div className="app-layout">
+      <AdminSidebar />
+      <main className="app-main">
+        <Outlet />
+      </main>
     </div>
   );
 }
@@ -41,6 +58,7 @@ export default function App() {
     <CompareProvider>
       <BrowserRouter>
         <Routes>
+        {/* Standard User Routes */}
         <Route path="/" element={<Layout />}>
           <Route index element={<Navigate to="/for-you" replace />} />
           <Route path="for-you" element={<ForYouPage />} />
@@ -54,6 +72,16 @@ export default function App() {
           <Route path="auth/login" element={<LoginPage />} />
           <Route path="auth/register-customer" element={<RegisterCustomerPage />} />
           <Route path="auth/register-store-owner" element={<RegisterStoreOwnerPage />} />
+          <Route path="admin/login" element={<AdminLogin />} />
+        </Route>
+
+        {/* Admin Routes with Separate Layout */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminManageUsers />} />
+          <Route path="users/:id" element={<AdminUserDetails />} />
+          <Route path="applications" element={<AdminStoreApplications />} />
         </Route>
       </Routes>
       </BrowserRouter>
