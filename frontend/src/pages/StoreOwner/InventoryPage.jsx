@@ -19,7 +19,10 @@ export default function InventoryPage() {
   const fetchInventory = async () => {
     try {
       setLoading(true);
-      const response = await api.get(routes.products.lowStock);
+      const storeId = localStorage.getItem('userId');
+      const response = await api.get(routes.products.browse, {
+        params: { storeId }
+      });
       const itemsData = response.data?.products || [];
       setItems(itemsData);
       
@@ -96,14 +99,9 @@ export default function InventoryPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-3 bg-slate-100 text-slate-800 rounded-lg shadow-sm">
-          <ClipboardList size={24} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Inventory Management</h1>
-          <p className="text-slate-500 mt-1">Monitor and update your low stock items.</p>
-        </div>
+      <div className="page-header">
+        <h1>Inventory Management</h1>
+        <p>Monitor and update your low stock items.</p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -151,7 +149,8 @@ export default function InventoryPage() {
                               <button
                                 onClick={() => handleUpdateStock(id)}
                                 disabled={isUpdating}
-                                className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                                className="text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                                style={{ backgroundColor: '#c4566a' }}
                               >
                               {isUpdating ? 'Saving...' : 'Update'}
                             </button>
@@ -170,7 +169,7 @@ export default function InventoryPage() {
               ) : (
                 <tr>
                   <td colSpan="4" className="p-8 text-center text-slate-500">
-                    Your inventory looks good. No low stock items found.
+                    No products found in your inventory. Head over to 'Manage Products' to add some!
                   </td>
                 </tr>
               )}

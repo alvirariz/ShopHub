@@ -21,7 +21,10 @@ export default function ManageProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await api.get(routes.products.browse);
+      const storeId = localStorage.getItem('userId');
+      const response = await api.get(routes.products.browse, {
+        params: { storeId }
+      });
       setProducts(response.data?.products || []);
       setError(null);
     } catch (err) {
@@ -102,19 +105,15 @@ export default function ManageProductsPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
-          <div className="p-3 bg-slate-100 text-slate-800 rounded-lg shadow-sm">
-            <Package size={24} />
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold text-slate-900">My Products</h1>
-            <p className="text-slate-500 mt-1">Manage your store catalog and listings.</p>
-          </div>
+      <div className="page-header flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1>Manage Products</h1>
+          <p>Add, update, or remove products from your store catalogue</p>
         </div>
         <button 
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 bg-rose-400 hover:bg-rose-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
+          className="flex items-center gap-2 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
+          style={{ backgroundColor: '#c4566a' }}
         >
           {showAddForm ? <X size={20} /> : <Plus size={20} />}
           {showAddForm ? 'Cancel' : 'Add New Product'}
@@ -141,7 +140,7 @@ export default function ManageProductsPage() {
               <textarea required className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-rose-500 focus:border-rose-500 h-24" value={addForm.description} onChange={e => setAddForm({...addForm, description: e.target.value})}></textarea>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Price ($)</label>
+              <label className="block text-sm font-medium text-slate-700 mb-1">Price (RS)</label>
               <input required type="number" step="0.01" min="0" className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-rose-500 focus:border-rose-500" value={addForm.price} onChange={e => setAddForm({...addForm, price: e.target.value})} />
             </div>
             <div>
@@ -204,7 +203,7 @@ export default function ManageProductsPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="p-4 font-medium">${product.price?.toFixed(2)}</td>
+                        <td className="p-4 font-medium">RS {product.price?.toFixed(2)}</td>
                         <td className="p-4">
                           <span className={`${product.stockQuantity <= 5 ? 'text-rose-600 font-bold' : ''}`}>
                             {product.stockQuantity}

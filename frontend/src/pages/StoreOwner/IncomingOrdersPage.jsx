@@ -63,14 +63,9 @@ export default function IncomingOrdersPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-3 bg-slate-100 text-slate-800 rounded-lg shadow-sm">
-          <ShoppingCart size={24} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Incoming Orders</h1>
-          <p className="text-slate-500 mt-1">Manage and update customer order statuses.</p>
-        </div>
+      <div className="page-header">
+        <h1>Incoming Orders</h1>
+        <p>Manage and update customer order statuses.</p>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -98,7 +93,7 @@ export default function IncomingOrdersPage() {
                         <div className="text-slate-500 text-xs">{order.customer?.email || ''}</div>
                       </td>
                       <td className="p-4">{order.items?.length || 0} items</td>
-                      <td className="p-4 font-medium">${order.total?.toFixed(2) || '0.00'}</td>
+                      <td className="p-4 font-medium">RS {order.total?.toFixed(2) || '0.00'}</td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize
                           ${order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 

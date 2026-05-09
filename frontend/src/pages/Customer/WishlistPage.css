@@ -1,8 +1,9 @@
 .wishlist-page {
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
   animation: fadeIn 0.4s ease-out;
+  background-color: #FAFAFA;
 }
 
 .wishlist-header {
@@ -47,7 +48,7 @@
 }
 
 .primary-btn {
-  background: linear-gradient(135deg, var(--primary-color, #800020), var(--secondary-color, #a00028));
+  background-color: #c4566a;
   color: white;
   border: none;
   padding: 12px 28px;
@@ -90,7 +91,8 @@
 .wishlist-image-container {
   position: relative;
   width: 100%;
-  padding-top: 100%; /* 1:1 Aspect Ratio */
+  padding-top: 100%;
+  /* 1:1 Aspect Ratio */
   cursor: pointer;
   overflow: hidden;
 }
@@ -165,8 +167,8 @@
 }
 
 .add-to-cart-btn {
-  background-color: #FDF2F2;
-  color: #000;
+  background-color: #c4566a;
+  color: #FFF;
   border: none;
   border-radius: 50px;
   padding: 10px 24px;
@@ -201,6 +203,28 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 768px) {
+  .wishlist-page {
+    padding: 1rem;
+  }
+  .wishlist-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+  .empty-state {
+    padding: 2rem 1rem;
+  }
+  .wishlist-header h1 {
+    font-size: 2rem;
+  }
 }
