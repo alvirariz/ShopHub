@@ -10,6 +10,16 @@ export const searchProducts = async (keyword) => {
   return response.data;
 };
 
+export const filterProducts = async (category) => {
+  const response = await api.get(routes.products.filter, { params: { category } });
+  return response.data;
+};
+
+export const getFilterOptions = async () => {
+  const response = await api.get(routes.products.filterOptions);
+  return response.data;
+};
+
 export const getProductDetails = async (productId) => {
   const response = await api.get(routes.products.details(productId));
   return response.data;

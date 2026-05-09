@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { routes } from '../../services/api';
 import { addToCart } from '../../services/cartService';
+import { browseProducts, searchProducts } from '../../services/productService';
+import { getRecommendations } from '../../services/preferenceService';
 import { useCompare } from '../../contexts/CompareContext';
 import './ForYouPage.css';
 
@@ -18,23 +19,18 @@ export default function ForYouPage() {
     try {
       setLoading(true);
       setError(null);
-      let endpoint = routes.products.browse;
-      let params = {};
-      
+      let data;
       const userId = localStorage.getItem('userId');
 
       if (searchQuery) {
-        endpoint = routes.products.search;
-        params.keyword = searchQuery;
+        data = await searchProducts(searchQuery);
       } else if (userId) {
-        endpoint = routes.preferences.recommendations(userId);
+        data = await getRecommendations(userId);
+      } else {
+        data = await browseProducts();
       }
       
-      const response = await api.get(endpoint, { params });
-      
-      // The recommendations endpoint returns `{ recommendations: [] }`
-      // The browse/search endpoint returns `{ products: [] }`
-      setProducts(response.data.recommendations || response.data.products || []);
+      setProducts(data.recommendations || data.products || []);
     } catch (err) {
       setError(err.message || 'Failed to load products');
     } finally {
@@ -55,7 +51,7 @@ export default function ForYouPage() {
     e.stopPropagation(); // Prevent navigating to details page
     try {
       setAddingToCart(product.id);
-      const userId = localStorage.getItem('userId') || '3';
+      const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, 1);
       // Show success feedback if needed
     } catch (err) {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api, { routes } from '../../services/api';
+import { registerStoreOwner } from '../../services/authService';
 import './Auth.css';
 
 export default function RegisterStoreOwnerPage() {
@@ -23,8 +23,8 @@ export default function RegisterStoreOwnerPage() {
     setSuccess('');
 
     try {
-      const response = await api.post(routes.auth.registerStoreOwner, formData);
-      setSuccess(response.data.message || 'Application submitted successfully!');
+      const data = await registerStoreOwner(formData);
+      setSuccess(data.message || 'Application submitted successfully!');
       setTimeout(() => navigate('/auth/login'), 3000);
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');

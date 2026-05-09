@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api, { routes } from '../../services/api';
+import { getUserNotifications, markNotificationRead } from '../../services/notificationService';
 import './NotificationsPage.css';
 
 export default function NotificationsPage() {
@@ -17,8 +17,8 @@ export default function NotificationsPage() {
         return;
       }
       try {
-        const response = await api.get(routes.notifications.byUser(userId));
-        setNotifications(response.data.notifications || []);
+        const data = await getUserNotifications(userId);
+        setNotifications(data.notifications || []);
       } catch (err) {
         // Handle 404 or other errors
         if (err.status === 404) {
@@ -36,7 +36,7 @@ export default function NotificationsPage() {
 
   const markAsRead = async (notificationId) => {
     try {
-      await api.patch(routes.notifications.markRead(notificationId));
+      await markNotificationRead(notificationId);
       setNotifications((prev) => 
         prev.map(n => n.id === notificationId ? { ...n, isRead: true } : n)
       );

@@ -40,7 +40,7 @@ export default function ShoppingCartPage() {
       setLoading(true);
       setError('');
 
-      const userId = localStorage.getItem('userId') || '3';
+      const userId = localStorage.getItem('userId');
       const guestItems = getGuestCartItems();
 
       if (userId && guestItems.length > 0) {
