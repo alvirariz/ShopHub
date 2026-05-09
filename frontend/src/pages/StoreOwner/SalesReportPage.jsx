@@ -54,14 +54,9 @@ export default function SalesReportPage() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="p-3 bg-slate-100 text-slate-800 rounded-lg shadow-sm">
-          <BarChart3 size={24} />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-slate-900">Sales & Insights</h1>
-          <p className="text-slate-500 mt-1">Detailed performance metrics for your store.</p>
-        </div>
+      <div className="page-header">
+        <h1>Sales & Insights</h1>
+        <p>Detailed performance metrics for your store.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -72,7 +67,7 @@ export default function SalesReportPage() {
             Total Revenue
           </div>
           <div className="text-4xl font-bold text-slate-900">
-            ${sales?.totalRevenue?.toFixed(2) || '0.00'}
+            RS {sales?.totalRevenue?.toFixed(2) || '0.00'}
           </div>
         </div>
 
@@ -134,7 +129,7 @@ export default function SalesReportPage() {
                         {isNaN(dateObj.getTime()) ? 'Unknown date' : dateObj.toLocaleDateString()}
                       </td>
                       <td className="p-4 capitalize">{order.status || 'unknown'}</td>
-                      <td className="p-4 font-medium text-right">${order.totalAmount?.toFixed(2) || '0.00'}</td>
+                      <td className="p-4 font-medium text-right">RS {order.total?.toFixed(2) || '0.00'}</td>
                     </tr>
                   );
                 })

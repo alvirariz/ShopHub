@@ -60,9 +60,9 @@ export default function StoreOwnerDashboard() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Welcome back 👋 {userName}</h1>
-        <p className="text-slate-500 mt-2">Here is what's happening with your store today.</p>
+      <div className="page-header">
+        <h1>Welcome back, {userName}</h1>
+        <p>Here is what's happening with your store today.</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -97,7 +97,7 @@ export default function StoreOwnerDashboard() {
             </div>
           </div>
           <div className="text-3xl font-bold text-slate-900">
-            ${data.sales.totalRevenue?.toFixed(2) || '0.00'}
+            RS {data.sales.totalRevenue?.toFixed(2) || '0.00'}
           </div>
         </div>
 
@@ -136,7 +136,7 @@ export default function StoreOwnerDashboard() {
                     <tr key={id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                       <td className="p-4 font-mono text-slate-500">{id}</td>
                       <td className="p-4">{order.items?.length || 0} items</td>
-                      <td className="p-4 font-medium">${order.totalAmount?.toFixed(2) || '0.00'}</td>
+                      <td className="p-4 font-medium">RS {order.total?.toFixed(2) || '0.00'}</td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize
                           ${order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 

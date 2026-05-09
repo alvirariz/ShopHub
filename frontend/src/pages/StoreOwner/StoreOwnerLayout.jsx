@@ -23,7 +23,12 @@ export default function StoreOwnerLayout() {
   return (
     <div className="app-layout">
       <aside className="sidebar" aria-label="Store Owner navigation">
-        <div className="sidebar-logo">ShopHub</div>
+        <div className="sidebar-header">
+          <div className="sidebar-logo" style={{ display: 'flex', flexDirection: 'column' }}>
+            ShopHub
+            <span style={{ fontSize: '0.65rem', textShadow: 'none', color: '#c4566a', letterSpacing: '2px', textTransform: 'uppercase', marginTop: '-4px' }}>Store Owner</span>
+          </div>
+        </div>
 
         <nav className="sidebar-nav">
           {navItems.map((item) => (
