@@ -1,0 +1,136 @@
+.global-compare-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #FFF;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  font-family: 'Inter', sans-serif;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.tray-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.tray-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.tray-count {
+  background-color: #800020;
+  color: #FFF;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.tray-text {
+  font-weight: 600;
+  color: #333;
+}
+
+.tray-items {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+  margin: 0 2rem;
+}
+
+.tray-item {
+  display: flex;
+  align-items: center;
+  background-color: #FAFAFA;
+  border: 1px solid #EEE;
+  border-radius: 8px;
+  padding: 4px 8px;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.tray-item img {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.tray-item-name {
+  font-size: 13px;
+  color: #555;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tray-item-remove {
+  background: none;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+
+.tray-item-remove:hover {
+  color: #D32F2F;
+}
+
+.tray-actions {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.tray-clear-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 16px;
+}
+
+.tray-clear-btn:hover {
+  color: #111;
+  text-decoration: underline;
+}
+
+.tray-compare-btn {
+  background-color: #800020;
+  color: #FFF;
+  border: none;
+  border-radius: 50px;
+  padding: 10px 24px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.tray-compare-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tray-compare-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
