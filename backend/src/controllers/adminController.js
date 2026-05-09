@@ -69,26 +69,102 @@ const getPlatformMetrics = async (req, res) => {
             where: { createdAt: { gte: oneDayAgo } }
         });
         
-        // Mock graph data matching Figma
-        const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const monthlySales = months.map(month => ({
-            name: month,
-            sales: Math.floor(Math.random() * 50) + 10,
-            revenue: Math.floor(Math.random() * 5000) + 1000
+        // Real monthly sales data for current year
+        const currentYear = new Date().getFullYear();
+        const startOfYear = new Date(currentYear, 0, 1);
+        
+        const allOrdersYear = await prisma.Order.findMany({
+            where: { createdAt: { gte: startOfYear } },
+            select: { total: true, createdAt: true }
+        });
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        
+        const monthlyDataMap = Array(12).fill(0).map((_, i) => ({
+            name: months[i],
+            sales: 0,
+            revenue: 0
+        }));
+
+        allOrdersYear.forEach(order => {
+            const monthIndex = new Date(order.createdAt).getMonth();
+            monthlyDataMap[monthIndex].sales += 1;
+            monthlyDataMap[monthIndex].revenue += (order.total || 0);
+        });
+
+        // Recent activity (last 10 days orders)
+        const tenDaysAgo = new Date();
+        tenDaysAgo.setDate(tenDaysAgo.getDate() - 9);
+        tenDaysAgo.setHours(0,0,0,0);
+
+        const recentOrdersForBar = await prisma.Order.findMany({
+            where: { createdAt: { gte: tenDaysAgo } },
+            select: { createdAt: true }
+        });
+
+        const recentActivityMap = {};
+        for(let i=0; i<10; i++) {
+            const d = new Date(tenDaysAgo);
+            d.setDate(d.getDate() + i);
+            const dateString = d.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+            recentActivityMap[dateString] = 0;
+        }
+
+        recentOrdersForBar.forEach(order => {
+            const dateString = new Date(order.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+            if (recentActivityMap[dateString] !== undefined) {
+                recentActivityMap[dateString] += 1;
+            }
+        });
+
+        const recentBarData = Object.keys(recentActivityMap).map(key => ({
+            name: key,
+            value: recentActivityMap[key]
         }));
         
-        const recentBarData = [
-            { name: 'May 03', value: 8 },
-            { name: 'May 05', value: 5 },
-            { name: 'May 08', value: 4 },
-            { name: 'May 12', value: 3 },
-            { name: 'May 15', value: 6 },
-            { name: 'May 19', value: 8 },
-            { name: 'May 22', value: 9 },
-            { name: 'May 27', value: 4 },
-            { name: 'May 29', value: 6 },
-            { name: 'May 31', value: 6 }
-        ];
+        // Recent Transactions for the dashboard table
+        const recentOrdersRaw = await prisma.Order.findMany({
+            take: 5,
+            orderBy: { createdAt: 'desc' },
+            select: {
+                id: true,
+                total: true,
+                status: true,
+                createdAt: true,
+                customerId: true
+            }
+        });
+
+        // Manually fetch user names since the relation is missing in Prisma schema
+        const customerIds = [...new Set(recentOrdersRaw.map(o => o.customerId))];
+        const customers = await prisma.User.findMany({
+            where: { id: { in: customerIds } },
+            select: { id: true, name: true }
+        });
+
+        const customerMap = {};
+        customers.forEach(c => {
+            customerMap[c.id] = c.name;
+        });
+
+        const recentTransactions = recentOrdersRaw.map(order => ({
+            id: order.id,
+            total: order.total,
+            status: order.status,
+            createdAt: order.createdAt,
+            customer: { name: customerMap[order.customerId] || 'Unknown User' }
+        }));
+
+        // User roles distribution for third chart
+        const roleDistributionRaw = await prisma.User.groupBy({
+            by: ['role'],
+            _count: { role: true }
+        });
+        
+        const userRoles = roleDistributionRaw.map(r => ({
+            name: r.role.charAt(0).toUpperCase() + r.role.slice(1),
+            value: r._count.role
+        }));
 
         return res.json({
             metrics: {
@@ -99,9 +175,11 @@ const getPlatformMetrics = async (req, res) => {
                 recentUsers,
                 recentOrders
             },
+            recentTransactions,
             graphs: {
-                monthlySales,
-                recentActivity: recentBarData
+                monthlySales: monthlyDataMap,
+                recentActivity: recentBarData,
+                userRoles: userRoles
             },
             timestamp: new Date().toISOString()
         });

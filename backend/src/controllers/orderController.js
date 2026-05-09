@@ -182,6 +182,15 @@ const updateOrderStatus = async(req,ans) =>
             data: { status: newStatus }
         })
 
+        // Notify user about status change
+        await prisma.Notification.create({
+            data: {
+                message: `The status of your order #${updated.id} has been updated to ${newStatus}.`,
+                type: 'order',
+                userId: updated.customerId
+            }
+        });
+
         return ans.json({ message: "Order status updated successfully", order: updated })
 
     }

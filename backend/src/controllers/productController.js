@@ -145,8 +145,12 @@ const compareProducts = async (req,res) => {
 
 const viewLowStockAlerts = async (req, ans) => {
   try {
+    const storeOwnerId = req.user.id;
     const products = await prisma.product.findMany({
-      where: { stock: { lt: 10 } } // lt mean less than 10
+      where: { 
+        storeId: storeOwnerId,
+        stock: { lt: 10 } 
+      }
     })
 
     if(products.length === 0) {
