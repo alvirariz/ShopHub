@@ -186,6 +186,33 @@
   border-color: #800020;
 }
 
+.quick-wishlist-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  color: #ff4757;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quick-wishlist-btn:hover {
+  background: #ff4757;
+  color: white;
+  transform: scale(1.1);
+}
+
 .floating-compare-bar {
   position: fixed;
   bottom: 0;

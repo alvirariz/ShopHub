@@ -5,20 +5,38 @@ const prisma = new PrismaClient()
 // uc 32 view incoming orders
 const viewIncomingOrders = async (req, ans) => {
   try {
-    const orders = await prisma.order.findMany({
-    include: { items: true },
-    orderBy: { createdAt: 'desc' }  
-})
-    if(orders.length === 0) {
-      return ans.status(200).json({ message: "No orders" })
-    }
+    const storeOwnerId = req.user.id; // Provided by authenticate middleware
 
-    return ans.json({ message: "orders: ", orders: orders })
-    
+    const allOrders = await prisma.order.findMany({
+      include: { 
+        items: { 
+          include: { product: true } 
+        } 
+      },
+      orderBy: { createdAt: 'desc' }  
+    });
+
+    // Filter to only include orders that have items from this store owner
+    const storeOrders = allOrders.filter(order => 
+      order.items.some(item => item.product.storeId === storeOwnerId)
+    );
+
+    // Fetch customer details manually for these orders
+    const ordersWithCustomers = await Promise.all(storeOrders.map(async (order) => {
+      const customer = await prisma.user.findUnique({
+        where: { id: order.customerId },
+        select: { name: true, email: true }
+      });
+      return {
+        ...order,
+        customer: customer || { name: 'Unknown', email: '' }
+      };
+    }));
+
+    return ans.json({ message: "orders: ", orders: ordersWithCustomers });
   } 
-  
   catch(error) {
-    ans.status(500).json({ message: "something went wrong", error: error.message })
+    ans.status(500).json({ message: "something went wrong", error: error.message });
   }
 }
 

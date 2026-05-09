@@ -24,8 +24,8 @@ export default function StoreOwnerDashboard() {
         ]);
 
         setData({
-          lowStock: lowStockRes.data || [],
-          incomingOrders: ordersRes.data || [],
+          lowStock: lowStockRes.data?.products || [],
+          incomingOrders: ordersRes.data?.orders || [],
           sales: salesRes.data || { totalRevenue: 0, totalOrders: 0 }
         });
       } catch (err) {

@@ -1,6 +1,11 @@
 import React, { createContext, useContext, useState } from 'react';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext({
+  token: null,
+  userRole: null,
+  login: () => {},
+  logout: () => {}
+});
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem('token') || null);

@@ -181,6 +181,26 @@
   background-color: #EEE;
 }
 
+.add-to-wishlist-large-btn {
+  background: none;
+  border: 1px solid #800020;
+  color: #800020;
+  border-radius: 50px;
+  height: 48px;
+  padding: 0 1.5rem;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-to-wishlist-large-btn:hover {
+  background-color: #fdf2f2;
+}
+
 .details-loading, .details-error {
   text-align: center;
   padding: 5rem;

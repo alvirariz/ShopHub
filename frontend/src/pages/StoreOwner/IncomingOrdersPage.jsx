@@ -16,7 +16,7 @@ export default function IncomingOrdersPage() {
     try {
       setLoading(true);
       const response = await api.get(routes.orders.incoming);
-      setOrders(response.data || []);
+      setOrders(response.data?.orders || []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to load incoming orders');
@@ -28,7 +28,7 @@ export default function IncomingOrdersPage() {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       setUpdatingId(orderId);
-      await api.put(routes.orders.updateStatus(orderId), { status: newStatus });
+      await api.put(routes.orders.updateStatus(orderId), { newStatus });
       
       // Update local state
       setOrders(orders.map(order => 
@@ -98,12 +98,13 @@ export default function IncomingOrdersPage() {
                         <div className="text-slate-500 text-xs">{order.customer?.email || ''}</div>
                       </td>
                       <td className="p-4">{order.items?.length || 0} items</td>
-                      <td className="p-4 font-medium">${order.totalAmount?.toFixed(2) || '0.00'}</td>
+                      <td className="p-4 font-medium">${order.total?.toFixed(2) || '0.00'}</td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize
                           ${order.status === 'pending' ? 'bg-amber-100 text-amber-700' : 
                             order.status === 'processing' ? 'bg-blue-100 text-blue-700' : 
-                            order.status === 'shipped' ? 'bg-indigo-100 text-indigo-700' : 
+                            order.status === 'confirmed' ? 'bg-indigo-100 text-indigo-700' : 
+                            order.status === 'shipped' ? 'bg-purple-100 text-purple-700' : 
                             order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' : 
                             'bg-slate-100 text-slate-700'}`}>
                           {order.status || 'unknown'}
@@ -118,6 +119,7 @@ export default function IncomingOrdersPage() {
                         >
                           <option value="pending">Pending</option>
                           <option value="processing">Processing</option>
+                          <option value="confirmed">Confirmed</option>
                           <option value="shipped">Shipped</option>
                           <option value="delivered">Delivered</option>
                         </select>

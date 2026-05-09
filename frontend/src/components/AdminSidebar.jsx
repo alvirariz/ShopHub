@@ -15,7 +15,7 @@ export default function AdminSidebar() {
     localStorage.removeItem('token');
     localStorage.removeItem('userId');
     localStorage.removeItem('userRole');
-    window.location.href = '/admin/login'; // Redirect to admin login on logout
+    navigate('/auth/login'); // Redirect to normal login on logout
   };
 
   return (

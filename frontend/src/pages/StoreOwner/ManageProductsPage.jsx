@@ -22,7 +22,7 @@ export default function ManageProductsPage() {
     try {
       setLoading(true);
       const response = await api.get(routes.products.browse);
-      setProducts(response.data || []);
+      setProducts(response.data?.products || []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to load products');
@@ -36,9 +36,11 @@ export default function ManageProductsPage() {
     try {
       setSubmitting(true);
       const payload = {
-        ...addForm,
+        name: addForm.name,
+        category: addForm.category,
         price: parseFloat(addForm.price),
-        stockQuantity: parseInt(addForm.stock, 10)
+        stock: parseInt(addForm.stock, 10),
+        storeId: parseInt(localStorage.getItem('userId'), 10)
       };
       await api.post(routes.products.create, payload);
       setShowAddForm(false);
@@ -77,9 +79,8 @@ export default function ManageProductsPage() {
       setSubmitting(true);
       const payload = {
         name: editForm.name,
-        description: editForm.description,
         price: parseFloat(editForm.price),
-        stockQuantity: parseInt(editForm.stock, 10)
+        stock: parseInt(editForm.stock, 10)
       };
       await api.put(routes.products.edit(id), payload);
       setEditingId(null);
@@ -113,7 +114,7 @@ export default function ManageProductsPage() {
         </div>
         <button 
           onClick={() => setShowAddForm(!showAddForm)}
-          className="flex items-center gap-2 bg-rose-500 hover:bg-rose-600 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
+          className="flex items-center gap-2 bg-rose-400 hover:bg-rose-500 text-white px-5 py-2.5 rounded-lg font-medium transition-colors shadow-sm"
         >
           {showAddForm ? <X size={20} /> : <Plus size={20} />}
           {showAddForm ? 'Cancel' : 'Add New Product'}

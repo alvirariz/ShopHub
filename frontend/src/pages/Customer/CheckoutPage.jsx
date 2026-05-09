@@ -143,7 +143,7 @@ export default function CheckoutPage() {
                 <option value="Express">Express Delivery (1-2 days)</option>
               </select>
             </div>
-            <button type="submit" className="next-btn">Continue to Payment</button>
+            <button type="submit" className="w-full mt-4 bg-rose-500 hover:bg-rose-600 text-white py-3.5 px-4 rounded-full font-semibold transition-colors">Continue to Payment</button>
           </form>
         )}
 
@@ -178,8 +178,8 @@ export default function CheckoutPage() {
             )}
 
             <div className="form-actions">
-              <button type="button" className="back-btn" onClick={() => setStep(1)}>Back</button>
-              <button type="submit" className="place-order-btn" disabled={loading}>
+              <button type="button" className="flex-1 bg-rose-50 text-rose-700 hover:bg-rose-100 py-3.5 px-4 rounded-full font-semibold transition-colors" onClick={() => setStep(1)}>Back</button>
+              <button type="submit" className="flex-[2] bg-rose-500 hover:bg-rose-600 text-white py-3.5 px-4 rounded-full font-semibold transition-colors disabled:opacity-60 disabled:cursor-not-allowed" disabled={loading}>
                 {loading ? 'Processing...' : 'Place Order'}
               </button>
             </div>
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
             <div className="success-icon">✓</div>
             <h2>Order Placed Successfully!</h2>
             <p>Thank you for your purchase. Your order is being processed.</p>
-            <button className="continue-shopping-btn" onClick={() => navigate('/for-you')}>
+            <button className="mt-4 bg-rose-500 hover:bg-rose-600 text-white py-3.5 px-8 rounded-full font-semibold transition-colors" onClick={() => navigate('/for-you')}>
               Continue Shopping
             </button>
           </div>

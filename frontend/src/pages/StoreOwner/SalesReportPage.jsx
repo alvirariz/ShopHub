@@ -68,7 +68,7 @@ export default function SalesReportPage() {
         {/* Card 1: Total Revenue */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
           <div className="flex items-center gap-3 text-slate-500 font-medium mb-4">
-            <TrendingUp size={20} className="text-emerald-500" />
+            <TrendingUp size={20} className="text-rose-600" />
             Total Revenue
           </div>
           <div className="text-4xl font-bold text-slate-900">
@@ -79,7 +79,7 @@ export default function SalesReportPage() {
         {/* Card 2: Total Orders */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
           <div className="flex items-center gap-3 text-slate-500 font-medium mb-4">
-            <ShoppingBag size={20} className="text-blue-500" />
+            <ShoppingBag size={20} className="text-rose-400" />
             Total Orders
           </div>
           <div className="text-4xl font-bold text-slate-900">
@@ -90,7 +90,7 @@ export default function SalesReportPage() {
         {/* Card 3: Top Selling Product */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col justify-between">
           <div className="flex items-center gap-3 text-slate-500 font-medium mb-4">
-            <Trophy size={20} className="text-amber-500" />
+            <Trophy size={20} className="text-rose-500" />
             Top Selling Product
           </div>
           <div>
@@ -151,28 +151,28 @@ export default function SalesReportPage() {
       </div>
 
       {/* Customer Insights Section */}
-      <div className="bg-slate-900 rounded-xl shadow-sm overflow-hidden text-white">
-        <div className="p-6 border-b border-slate-800">
-          <h2 className="text-lg font-bold flex items-center gap-2">
-            <BarChart3 size={18} className="text-rose-400" />
+      <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+        <div className="p-6 border-b border-slate-200">
+          <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+            <BarChart3 size={18} className="text-rose-500" />
             Customer Insights
           </h2>
         </div>
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-slate-800 rounded-lg p-5 border border-slate-700">
-            <h3 className="text-slate-400 text-sm font-medium mb-1">New Customers</h3>
-            <div className="text-3xl font-bold">{insights?.newCustomers || 0}</div>
+          <div className="bg-slate-50 rounded-lg p-5 border border-slate-100">
+            <h3 className="text-slate-500 text-sm font-medium mb-1">New Customers</h3>
+            <div className="text-3xl font-bold text-slate-900">{insights?.newCustomers || 0}</div>
           </div>
-          <div className="bg-slate-800 rounded-lg p-5 border border-slate-700">
-            <h3 className="text-slate-400 text-sm font-medium mb-1">Returning Customers</h3>
-            <div className="text-3xl font-bold">{insights?.returningCustomers || 0}</div>
+          <div className="bg-slate-50 rounded-lg p-5 border border-slate-100">
+            <h3 className="text-slate-500 text-sm font-medium mb-1">Returning Customers</h3>
+            <div className="text-3xl font-bold text-slate-900">{insights?.returningCustomers || 0}</div>
           </div>
-          <div className="bg-slate-800 rounded-lg p-5 border border-slate-700 md:col-span-2">
-            <h3 className="text-slate-400 text-sm font-medium mb-3">Popular Categories</h3>
+          <div className="bg-slate-50 rounded-lg p-5 border border-slate-100 md:col-span-2">
+            <h3 className="text-slate-500 text-sm font-medium mb-3">Popular Categories</h3>
             <div className="flex flex-wrap gap-2">
               {insights?.popularCategories?.length > 0 ? (
                 insights.popularCategories.map((cat, idx) => (
-                  <span key={idx} className="bg-slate-700 px-3 py-1.5 rounded-md text-sm">
+                  <span key={idx} className="bg-rose-50 text-rose-600 px-3 py-1.5 rounded-md text-sm font-medium">
                     {cat}
                   </span>
                 ))

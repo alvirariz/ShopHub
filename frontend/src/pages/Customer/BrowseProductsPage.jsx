@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { browseProducts, searchProducts, filterProducts } from '../../services/productService';
 import { addToCart } from '../../services/cartService';
+import { addToWishlist } from '../../services/wishlistService';
 import { useCompare } from '../../contexts/CompareContext';
 import './BrowseProductsPage.css';
 
@@ -67,6 +68,21 @@ export default function BrowseProductsPage() {
       alert('Failed to add item to cart: ' + (err.message || 'Unknown error'));
     } finally {
       setAddingToCart(null);
+    }
+  };
+
+  const handleAddToWishlist = async (product, e) => {
+    e.stopPropagation();
+    try {
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        alert('Please log in to add to wishlist');
+        return;
+      }
+      await addToWishlist(userId, product.id);
+      alert('Added to wishlist successfully!');
+    } catch (err) {
+      alert(err.message || 'Failed to add to wishlist');
     }
   };
 
@@ -136,6 +152,13 @@ export default function BrowseProductsPage() {
                   title="Select for comparison"
                 >
                   ✓ Compare
+                </button>
+                <button 
+                  className="quick-wishlist-btn"
+                  onClick={(e) => handleAddToWishlist(product, e)}
+                  title="Add to Wishlist"
+                >
+                  ♡
                 </button>
               </div>
               <div className="product-info">

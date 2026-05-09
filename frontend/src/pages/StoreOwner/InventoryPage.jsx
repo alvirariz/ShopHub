@@ -20,12 +20,13 @@ export default function InventoryPage() {
     try {
       setLoading(true);
       const response = await api.get(routes.products.lowStock);
-      setItems(response.data || []);
+      const itemsData = response.data?.products || [];
+      setItems(itemsData);
       
       // Initialize stock inputs
       const initialInputs = {};
-      (response.data || []).forEach(item => {
-        initialInputs[item.id || item._id] = item.stockQuantity || 0;
+      itemsData.forEach(item => {
+        initialInputs[item.id || item._id] = item.stock || 0;
       });
       setStockInputs(initialInputs);
       setError(null);
@@ -57,7 +58,7 @@ export default function InventoryPage() {
       
       // Update local state smoothly
       setItems(items.map(item => 
-        (item.id === id || item._id === id) ? { ...item, stockQuantity: newValue } : item
+        (item.id === id || item._id === id) ? { ...item, stock: newValue } : item
       ));
 
       // Clear success message after 3 seconds
@@ -132,8 +133,8 @@ export default function InventoryPage() {
                       <td className="p-4 capitalize">{item.category || 'N/A'}</td>
                       <td className="p-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-medium 
-                          ${item.stockQuantity <= 5 ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>
-                          {item.stockQuantity || 0} in stock
+                          ${item.stock <= 5 ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>
+                          {item.stock !== undefined ? item.stock : 0} in stock
                         </span>
                       </td>
                       <td className="p-4">
@@ -147,11 +148,11 @@ export default function InventoryPage() {
                               onChange={(e) => handleInputChange(id, e.target.value)}
                               disabled={isUpdating}
                             />
-                            <button
-                              onClick={() => handleUpdateStock(id)}
-                              disabled={isUpdating}
-                              className="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
-                            >
+                              <button
+                                onClick={() => handleUpdateStock(id)}
+                                disabled={isUpdating}
+                                className="bg-rose-400 hover:bg-rose-500 text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
+                              >
                               {isUpdating ? 'Saving...' : 'Update'}
                             </button>
                           </div>
