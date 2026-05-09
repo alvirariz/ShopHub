@@ -73,7 +73,7 @@ export default function AdminManageUsers() {
       <div className="admin-table-container">
         <div className="admin-table-header">
           <h2>User Directory</h2>
-          <form onSubmit={handleSearch}>
+          <form onSubmit={handleSearch} className="admin-search-form">
             <input 
               type="text" 
               className="admin-search-input"
@@ -81,6 +81,7 @@ export default function AdminManageUsers() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
+            <button type="submit" className="admin-search-btn">Search</button>
           </form>
         </div>
 

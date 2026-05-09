@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiRequest, routes } from '../../services/api';
 import './Admin.css';
@@ -11,7 +11,7 @@ export default function AdminUserDetails() {
   const [error, setError] = useState(null);
   const [modalConfig, setModalConfig] = useState(null);
 
-  const fetchUserDetails = async () => {
+  const fetchUserDetails = useCallback(async () => {
     setLoading(true);
     try {
       const data = await apiRequest({
@@ -24,11 +24,11 @@ export default function AdminUserDetails() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     fetchUserDetails();
-  }, [id]);
+  }, [fetchUserDetails]);
 
   const openModal = (userId, currentStatus) => {
     setModalConfig({ userId, currentStatus });
@@ -65,56 +65,95 @@ export default function AdminUserDetails() {
     <>
       <div className="admin-container admin-user-details-page">
         <div className="user-details-header">
-          <button className="btn-back" onClick={() => navigate('/admin/users')}>Back</button>
-          <h2>User Details: {user.name}</h2>
+          <div className="header-left">
+            <button className="btn-back" onClick={() => navigate('/admin/users')}>← Back</button>
+            <h2>User Details: {user.name}</h2>
+          </div>
         </div>
 
         <div className="user-details-content">
-          <div className="details-card">
-            <h3>ACCOUNT INFORMATION</h3>
-            <p><strong>User ID:</strong> #{user.id}</p>
-            <p><strong>Name:</strong> {user.name}</p>
-            <p><strong>Email:</strong> {user.email}</p>
-            <p><strong>Role:</strong> <span style={{ textTransform: 'capitalize' }}>{user.role}</span></p>
-            <p><strong>Joined:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
-            <p><strong>Last Login:</strong> N/A</p>
+          <div className="details-card main-info-card">
+            <div className="card-header">
+              <h3>Account Information</h3>
+            </div>
+            <div className="info-grid">
+              <div className="info-item">
+                <span className="info-label">User ID</span>
+                <span className="info-value">#{user.id}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Full Name</span>
+                <span className="info-value">{user.name}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Email Address</span>
+                <span className="info-value">{user.email}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">System Role</span>
+                <span className="info-value role-badge">{user.role}</span>
+              </div>
+              <div className="info-item">
+                <span className="info-label">Date Joined</span>
+                <span className="info-value">{new Date(user.createdAt).toLocaleDateString()}</span>
+              </div>
+            </div>
           </div>
 
           <div className="details-card-row">
             <div className="details-card status-card">
-              <h3>Current Status:</h3>
-              <div className={`status-badge-large ${user.isSuspended ? 'suspended' : 'active'}`}>
-                {user.isSuspended ? 'Suspended' : 'Active'}
+              <div className="card-header">
+                <h3>Current Status</h3>
+              </div>
+              <div className="status-display">
+                <div className={`status-badge-inline ${user.isSuspended ? 'suspended' : 'active'}`}>
+                  {user.isSuspended ? 'Account Suspended' : 'Account Active'}
+                </div>
               </div>
               
-              {user.isSuspended ? (
-                <button 
-                  className="btn-large btn-reactivate"
-                  onClick={() => openModal(user.id, true)}
-                >
-                  Reactivate User
-                </button>
-              ) : (
-                <button 
-                  className="btn-large btn-suspend"
-                  onClick={() => openModal(user.id, false)}
-                >
-                  Suspend User
-                </button>
-              )}
+              <div className="status-actions">
+                {user.isSuspended ? (
+                  <button 
+                    className="btn-large btn-reactivate"
+                    onClick={() => openModal(user.id, true)}
+                  >
+                    Reactivate User
+                  </button>
+                ) : (
+                  <button 
+                    className="btn-large btn-suspend-outline"
+                    onClick={() => openModal(user.id, false)}
+                  >
+                    Suspend User
+                  </button>
+                )}
+              </div>
             </div>
 
             <div className="details-card activity-card">
-              <h3>ACCOUNT ACTIVITY</h3>
+              <div className="card-header">
+                <h3>Account Activity</h3>
+              </div>
               <div className="activity-stats">
                 <div className="stat-column">
-                  <p><strong>Total Orders:</strong> {user.totalOrders}</p>
-                  <p><strong>Last Order:</strong> {user.lastOrderDate ? new Date(user.lastOrderDate).toLocaleDateString() : 'Never'}</p>
-                  <p><strong>Wishlist:</strong> {user.wishlistCount} items</p>
+                  <div className="info-item">
+                    <span className="info-label">Total Orders</span>
+                    <span className="info-value metric-large">{user.totalOrders}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Last Order Date</span>
+                    <span className="info-value">{user.lastOrderDate ? new Date(user.lastOrderDate).toLocaleDateString() : 'N/A'}</span>
+                  </div>
                 </div>
                 <div className="stat-column">
-                  <p><strong>Total Spent:</strong> Rs {user.totalSpent?.toLocaleString() || 0}</p>
-                  <p><strong>Reviews:</strong> {user.reviewsCount}</p>
+                  <div className="info-item">
+                    <span className="info-label">Total Spent</span>
+                    <span className="info-value metric-large">Rs {user.totalSpent?.toLocaleString() || 0}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Wishlist / Reviews</span>
+                    <span className="info-value">{user.wishlistCount} / {user.reviewsCount}</span>
+                  </div>
                 </div>
               </div>
             </div>
