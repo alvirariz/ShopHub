@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api, { routes } from '../../services/api';
 import { addToCart } from '../../services/cartService';
+import { getProductDetails } from '../../services/productService';
+import { getReviewsByProduct, submitReview } from '../../services/reviewService';
 import './ProductDetailsPage.css';
 
 export default function ProductDetailsPage() {
@@ -24,13 +25,13 @@ export default function ProductDetailsPage() {
     const fetchProductDetails = async () => {
       try {
         setLoading(true);
-        const response = await api.get(routes.products.details(id));
-        setProduct(response.data);
+        const data = await getProductDetails(id);
+        setProduct(data);
         
         // Fetch reviews
         try {
-          const reviewsRes = await api.get(routes.reviews.byProduct(id));
-          setReviews(reviewsRes.data.reviews || []);
+          const reviewsData = await getReviewsByProduct(id);
+          setReviews(reviewsData.reviews || []);
         } catch (err) {
           console.error("Failed to fetch reviews", err);
           setReviews([]);
@@ -60,7 +61,7 @@ export default function ProductDetailsPage() {
     
     try {
       setAddingToCart(true);
-      const userId = localStorage.getItem('userId') || '3';
+      const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, quantity);
       // Optional: Add a toast notification here
       alert('Added to cart successfully!');
@@ -93,9 +94,9 @@ export default function ProductDetailsPage() {
         body: reviewForm.body
       };
       
-      const response = await api.post(routes.reviews.root, payload);
+      const reviewData = await submitReview(payload);
       setReviewSuccess('Review submitted successfully!');
-      setReviews([response.data.review, ...reviews]);
+      setReviews([reviewData.review, ...reviews]);
       setReviewForm({ rating: 5, title: '', body: '' });
     } catch (err) {
       setReviewError(err.response?.data?.message || err.message || 'Failed to submit review');

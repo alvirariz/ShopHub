@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { routes } from '../../services/api';
 import { getCart } from '../../services/cartService';
+import { checkout } from '../../services/orderService';
 import './CheckoutPage.css';
 
 export default function CheckoutPage() {
@@ -27,9 +27,14 @@ export default function CheckoutPage() {
     cvv: '',
   });
 
-  const userId = localStorage.getItem('userId') || '3';
+  const userId = localStorage.getItem('userId');
 
   useEffect(() => {
+    if (!userId) {
+      navigate('/auth/login');
+      return;
+    }
+
     const fetchCart = async () => {
       try {
         const data = await getCart(userId);
@@ -68,7 +73,7 @@ export default function CheckoutPage() {
       // Backend expects: userId, shippingAddress, shippingMethod
       const fullAddress = `${shippingInfo.fullName}, ${shippingInfo.address}, ${shippingInfo.city} ${shippingInfo.zipCode}`;
       
-      await api.post(routes.orders.checkout, {
+      await checkout({
         userId: parseInt(userId),
         shippingAddress: fullAddress,
         shippingMethod: shippingInfo.method

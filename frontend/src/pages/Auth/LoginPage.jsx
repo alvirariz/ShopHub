@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api, { routes } from '../../services/api';
+import { login } from '../../services/authService';
 import './Auth.css';
 
 export default function LoginPage() {
@@ -16,8 +16,8 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const response = await api.post(routes.auth.login, { email, password });
-      const { token, user } = response.data;
+      const data = await login(email, password);
+      const { token, user } = data;
       
       localStorage.setItem('token', token);
       localStorage.setItem('userId', user.id);

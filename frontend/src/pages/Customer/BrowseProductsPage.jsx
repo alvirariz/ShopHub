@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { routes } from '../../services/api';
+import { browseProducts, searchProducts, filterProducts } from '../../services/productService';
 import { addToCart } from '../../services/cartService';
 import { useCompare } from '../../contexts/CompareContext';
 import './BrowseProductsPage.css';
@@ -22,20 +22,17 @@ export default function BrowseProductsPage() {
     try {
       setLoading(true);
       setError('');
-      
-      let endpoint = routes.products.browse;
-      let params = {};
+      let data;
       
       if (searchQuery) {
-        endpoint = routes.products.search;
-        params.keyword = searchQuery;
+        data = await searchProducts(searchQuery);
       } else if (filterCategory) {
-        endpoint = routes.products.filter;
-        params.category = filterCategory;
+        data = await filterProducts(filterCategory);
+      } else {
+        data = await browseProducts();
       }
 
-      const response = await api.get(endpoint, { params });
-      setProducts(response.data.products || []);
+      setProducts(data.products || []);
     } catch (err) {
       setError(err.message || 'Failed to load products');
       setProducts([]);
@@ -64,7 +61,7 @@ export default function BrowseProductsPage() {
     e.stopPropagation();
     try {
       setAddingToCart(product.id);
-      const userId = localStorage.getItem('userId') || '3';
+      const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, 1);
     } catch (err) {
       alert('Failed to add item to cart: ' + (err.message || 'Unknown error'));

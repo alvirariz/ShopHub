@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import api, { routes } from '../../services/api';
+import { getOrderHistory, trackOrder, cancelOrder } from '../../services/orderService';
 import './OrderHistoryPage.css';
 
 export default function OrderHistoryPage() {
@@ -18,8 +18,8 @@ export default function OrderHistoryPage() {
         return;
       }
       try {
-        const response = await api.get(routes.orders.history(userId));
-        setOrders(response.data.orders || []);
+        const data = await getOrderHistory(userId);
+        setOrders(data.orders || []);
       } catch (err) {
         setError(err.message || 'Failed to load order history.');
       } finally {
@@ -32,10 +32,21 @@ export default function OrderHistoryPage() {
 
   const handleTrackOrder = async (orderId) => {
     try {
-      const response = await api.get(routes.orders.track(orderId));
-      setTrackingData(response.data);
+      const data = await trackOrder(orderId);
+      setTrackingData(data);
     } catch (err) {
       alert(err.message || 'Failed to track order');
+    }
+  };
+
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) return;
+    try {
+      await cancelOrder(orderId);
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'cancelled' } : o));
+      alert('Order cancelled successfully.');
+    } catch (err) {
+      alert(err.message || 'Failed to cancel order.');
     }
   };
 
@@ -94,12 +105,23 @@ export default function OrderHistoryPage() {
                 <div className="order-total">
                   Total: <strong>{formatPrice(order.total)}</strong>
                 </div>
-                <button 
-                  className="track-btn"
-                  onClick={() => handleTrackOrder(order.id)}
-                >
-                  Track Order
-                </button>
+                <div className="order-actions-container" style={{display:'flex', gap:'10px'}}>
+                  {order.status.toLowerCase() === 'pending' && (
+                    <button 
+                      className="track-btn"
+                      style={{backgroundColor:'#dc3545'}}
+                      onClick={() => handleCancelOrder(order.id)}
+                    >
+                      Cancel Order
+                    </button>
+                  )}
+                  <button 
+                    className="track-btn"
+                    onClick={() => handleTrackOrder(order.id)}
+                  >
+                    Track Order
+                  </button>
+                </div>
               </div>
             </div>
           ))}

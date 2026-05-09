@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import api, { routes } from '../../services/api';
 import { addToCart } from '../../services/cartService';
+import { compareProducts } from '../../services/productService';
 import { useCompare } from '../../contexts/CompareContext';
 import './CompareProductsPage.css';
 
@@ -22,8 +22,8 @@ export default function CompareProductsPage() {
       }
       try {
         const ids = compareList.map(p => p.id).join(',');
-        const response = await api.get(`${routes.products.compare}?ids=${ids}`);
-        setProducts(response.data.products || []);
+        const data = await compareProducts(ids);
+        setProducts(data.products || []);
       } catch (err) {
         setError(err.message || 'Failed to load comparison data.');
       } finally {
@@ -37,7 +37,7 @@ export default function CompareProductsPage() {
   const handleAddToCart = async (product) => {
     try {
       setAddingToCart(product.id);
-      const userId = localStorage.getItem('userId') || '3';
+      const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, 1);
       alert('Added to cart!');
     } catch (err) {

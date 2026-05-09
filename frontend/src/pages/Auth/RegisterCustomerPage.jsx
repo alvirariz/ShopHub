@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import api, { routes } from '../../services/api';
+import { registerCustomer } from '../../services/authService';
+import { savePreferences } from '../../services/preferenceService';
+import { getFilterOptions } from '../../services/productService';
 import './Auth.css';
 
 export default function RegisterCustomerPage() {
@@ -15,6 +17,26 @@ export default function RegisterCustomerPage() {
   const [error, setError] = useState('');
   const [registeredUserId, setRegisteredUserId] = useState(null);
   const navigate = useNavigate();
+
+  const [availableCategories, setAvailableCategories] = useState([
+    "Electronics", "Clothing", "Home & Lifestyle", "Beauty", "Sports", "Books", "Groceries", "Toys"
+  ]);
+  const [availableBrands, setAvailableBrands] = useState([
+    "Samsung", "Apple", "Nike", "Adidas", "H&M", "Zara", "Nestle", "IKEA"
+  ]);
+
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const options = await getFilterOptions();
+        if (options.categories?.length > 0) setAvailableCategories(options.categories);
+        if (options.brands?.length > 0) setAvailableBrands(options.brands);
+      } catch (err) {
+        console.error("Failed to load filter options", err);
+      }
+    };
+    fetchOptions();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -40,14 +62,7 @@ export default function RegisterCustomerPage() {
     });
   };
 
-  const CATEGORIES = [
-    "Electronics", "Clothing", "Home & Lifestyle",
-    "Beauty", "Sports", "Books", "Groceries", "Toys"
-  ];
-
-  const BRANDS = [
-    "Samsung", "Apple", "Nike", "Adidas", "H&M", "Zara", "Nestle", "IKEA"
-  ];
+  // Hardcoded arrays removed in favor of state
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -55,9 +70,9 @@ export default function RegisterCustomerPage() {
     setError('');
 
     try {
-      const response = await api.post(routes.auth.registerCustomer, formData);
-      const { token, user } = response.data;
-      
+      const data = await registerCustomer(formData);
+      const { token, user } = data;
+
       localStorage.setItem('token', token);
       localStorage.setItem('userId', user.id);
       localStorage.setItem('userRole', user.role);
@@ -77,12 +92,10 @@ export default function RegisterCustomerPage() {
 
     try {
       if (registeredUserId) {
-        await api.post(routes.preferences.save(registeredUserId), {
-          preferences: {
-            categories: preferences.categories,
-            priceRange: preferences.priceRange,
-            brands: preferences.brands
-          }
+        await savePreferences(registeredUserId, {
+          categories: preferences.categories,
+          priceRange: preferences.priceRange,
+          brands: preferences.brands
         });
       }
       navigate('/for-you');
@@ -113,33 +126,33 @@ export default function RegisterCustomerPage() {
             <h1 className="auth-title">Register as Customer</h1>
             <form onSubmit={handleRegister} className="auth-form">
               <div className="form-group">
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   name="name"
-                  placeholder="Enter full name" 
-                  value={formData.name} 
-                  onChange={handleChange} 
-                  required 
+                  placeholder="Enter full name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
                 />
               </div>
               <div className="form-group">
-                <input 
-                  type="email" 
+                <input
+                  type="email"
                   name="email"
-                  placeholder="Enter email" 
-                  value={formData.email} 
-                  onChange={handleChange} 
-                  required 
+                  placeholder="Enter email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
                 />
               </div>
               <div className="form-group">
-                <input 
-                  type="password" 
+                <input
+                  type="password"
                   name="password"
-                  placeholder="Enter password" 
-                  value={formData.password} 
-                  onChange={handleChange} 
-                  required 
+                  placeholder="Enter password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
                 />
               </div>
 
@@ -149,7 +162,7 @@ export default function RegisterCustomerPage() {
                 {loading ? 'Registering...' : 'Register'}
               </button>
             </form>
-            
+
             <div className="auth-footer">
               <p>Already have an account?</p>
               <div className="auth-links">
@@ -163,7 +176,7 @@ export default function RegisterCustomerPage() {
           <div className="pref-step">
             <h1 className="pref-title">What do you usually shop for?</h1>
             <div className="pref-pills">
-              {CATEGORIES.map(category => (
+              {availableCategories.map(category => (
                 <button
                   key={category}
                   className={`pref-pill ${preferences.categories.includes(category) ? 'active' : ''}`}
@@ -188,10 +201,10 @@ export default function RegisterCustomerPage() {
                 <span>PKR {preferences.priceRange.min}</span>
                 <span>PKR {preferences.priceRange.max === 50000 ? '50,000+' : preferences.priceRange.max}</span>
               </div>
-              <input 
-                type="range" 
-                min="0" 
-                max="50000" 
+              <input
+                type="range"
+                min="0"
+                max="50000"
                 step="1000"
                 value={preferences.priceRange.max}
                 onChange={(e) => setPreferences({ ...preferences, priceRange: { ...preferences.priceRange, max: parseInt(e.target.value) } })}
@@ -209,7 +222,7 @@ export default function RegisterCustomerPage() {
           <div className="pref-step">
             <h1 className="pref-title">Any brands you love?</h1>
             <div className="pref-pills">
-              {BRANDS.map(brand => (
+              {availableBrands.map(brand => (
                 <button
                   key={brand}
                   className={`pref-pill ${preferences.brands.includes(brand) ? 'active' : ''}`}
