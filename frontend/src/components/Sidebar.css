@@ -1,0 +1,102 @@
+.sidebar {
+  width: 220px;
+  min-height: 100vh;
+  background: var(--color-sidebar);
+  display: flex;
+  flex-direction: column;
+  padding: 32px 0 24px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--color-divider);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.sidebar-logo {
+  font-family: var(--font-serif);
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  padding: 0 24px;
+  margin-bottom: 36px;
+  letter-spacing: -0.3px;
+}
+
+/* ── Nav links ── */
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 2px;
+}
+
+.sidebar-nav-link {
+  display: block;
+  padding: 10px 24px;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text);
+  border-left: 3px solid transparent;
+  transition: color 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.sidebar-nav-link:hover {
+  color: var(--color-primary);
+  background: #fdf0f3;
+}
+
+.sidebar-nav-link.active {
+  color: var(--color-primary);
+  border-left-color: var(--color-primary);
+  font-weight: 500;
+  background: #fdf0f3;
+}
+
+/* ── Divider ── */
+.sidebar-divider {
+  height: 1px;
+  background: var(--color-divider);
+  margin: 16px 24px;
+}
+
+/* ── Bottom actions ── */
+.sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sidebar-bottom-link {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 24px;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--color-text);
+  transition: color 0.18s ease;
+  cursor: pointer;
+}
+
+.sidebar-bottom-link:hover {
+  color: var(--color-primary);
+}
+
+/* ── Responsive: hide sidebar on small screens ── */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 180px;
+  }
+
+  .sidebar-logo {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .sidebar {
+    display: none;
+  }
+}
