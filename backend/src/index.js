@@ -1,10 +1,24 @@
 const express = require('express');
+
 require('dotenv').config();
 
 const app = express();
 
+
+
+
+
 // Middleware
 app.use(express.json());
+
+
+const cors = require('cors');
+app.use(cors({
+  origin: 'http://localhost:3001',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 // Log requests
@@ -12,6 +26,12 @@ app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
 });
+
+
+
+
+
+
 
 // Routes
 const authRoutes = require('./routes/authRoutes');
@@ -37,7 +57,7 @@ app.use('/api/storeowner', storeOwnerRoutes)
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ 
+  res.json({
     message: 'ShopHub API is running!',
     timestamp: new Date().toISOString()
   });
@@ -45,7 +65,7 @@ app.get('/', (req, res) => {
 
 // 404 handler
 app.use((req, res) => {
-  res.status(404).json({ 
+  res.status(404).json({
     error: 'Route not found',
     message: `Cannot ${req.method} ${req.url}`
   });
@@ -54,9 +74,9 @@ app.use((req, res) => {
 // Error handler
 app.use((err, req, res, next) => {
   console.error('Error:', err);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Internal server error',
-    message: err.message 
+    message: err.message
   });
 });
 
@@ -64,5 +84,5 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log( `Server running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
