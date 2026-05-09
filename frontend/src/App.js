@@ -14,6 +14,7 @@ import RegisterCustomerPage from './pages/Auth/RegisterCustomerPage';
 import RegisterStoreOwnerPage from './pages/Auth/RegisterStoreOwnerPage';
 import CompareProductsPage from './pages/Customer/CompareProductsPage';
 import { CompareProvider } from './contexts/CompareContext';
+import { AuthProvider } from './contexts/AuthContext';
 import CompareTray from './components/CompareTray';
 import AdminDashboard from './pages/Admin/AdminDashboard';
 import AdminManageUsers from './pages/Admin/AdminManageUsers';
@@ -21,6 +22,14 @@ import AdminUserDetails from './pages/Admin/AdminUserDetails';
 import AdminStoreApplications from './pages/Admin/AdminStoreApplications';
 import AdminLogin from './pages/Admin/AdminLogin';
 import './App.css';
+
+// Store Owner Pages
+import StoreOwnerLayout from './pages/StoreOwner/StoreOwnerLayout';
+import StoreOwnerDashboard from './pages/StoreOwner/StoreOwnerDashboard';
+import ManageProductsPage from './pages/StoreOwner/ManageProductsPage';
+import InventoryPage from './pages/StoreOwner/InventoryPage';
+import IncomingOrdersPage from './pages/StoreOwner/IncomingOrdersPage';
+import SalesReportPage from './pages/StoreOwner/SalesReportPage';
 
 function Layout() {
   return (
@@ -45,46 +54,64 @@ function AdminLayout() {
   );
 }
 
-function PlaceholderPage({ label }) {
-  return (
-    <div className="placeholder-page">
-      <p>{label} — Coming Soon</p>
-    </div>
-  );
-}
+const ProtectedRoute = ({ children, requiredRole }) => {
+  const role = localStorage.getItem('userRole');
+  if (role !== requiredRole) {
+    return <Navigate to="/auth/login" replace />;
+  }
+  return children;
+};
 
 export default function App() {
   return (
-    <CompareProvider>
-      <BrowserRouter>
-        <Routes>
-        {/* Standard User Routes */}
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Navigate to="/for-you" replace />} />
-          <Route path="for-you" element={<ForYouPage />} />
-          <Route path="cart" element={<ShoppingCartPage />} />
-          <Route path="checkout" element={<CheckoutPage />} />
-          <Route path="products" element={<BrowseProductsPage />} />
-          <Route path="products/:id" element={<ProductDetailsPage />} />
-          <Route path="compare" element={<CompareProductsPage />} />
-          <Route path="orders" element={<OrderHistoryPage />} />
-          <Route path="notifications" element={<NotificationsPage />} />
-          <Route path="auth/login" element={<LoginPage />} />
-          <Route path="auth/register-customer" element={<RegisterCustomerPage />} />
-          <Route path="auth/register-store-owner" element={<RegisterStoreOwnerPage />} />
-          <Route path="admin/login" element={<AdminLogin />} />
-        </Route>
+    <AuthProvider>
+      <CompareProvider>
+        <BrowserRouter>
+          <Routes>
+            {/* Standard User Routes */}
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Navigate to="/for-you" replace />} />
+              <Route path="for-you" element={<ForYouPage />} />
+              <Route path="cart" element={<ShoppingCartPage />} />
+              <Route path="checkout" element={<CheckoutPage />} />
+              <Route path="products" element={<BrowseProductsPage />} />
+              <Route path="products/:id" element={<ProductDetailsPage />} />
+              <Route path="compare" element={<CompareProductsPage />} />
+              <Route path="orders" element={<OrderHistoryPage />} />
+              <Route path="notifications" element={<NotificationsPage />} />
+              <Route path="auth/login" element={<LoginPage />} />
+              <Route path="auth/register-customer" element={<RegisterCustomerPage />} />
+              <Route path="auth/register-store-owner" element={<RegisterStoreOwnerPage />} />
+              <Route path="admin/login" element={<AdminLogin />} />
+            </Route>
 
-        {/* Admin Routes with Separate Layout */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="users" element={<AdminManageUsers />} />
-          <Route path="users/:id" element={<AdminUserDetails />} />
-          <Route path="applications" element={<AdminStoreApplications />} />
-        </Route>
-      </Routes>
-      </BrowserRouter>
-    </CompareProvider>
+            {/* Store Owner Routes with Separate Layout */}
+            <Route 
+              path="/store-owner" 
+              element={
+                <ProtectedRoute requiredRole="storeOwner">
+                  <StoreOwnerLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<StoreOwnerDashboard />} />
+              <Route path="products" element={<ManageProductsPage />} />
+              <Route path="inventory" element={<InventoryPage />} />
+              <Route path="orders" element={<IncomingOrdersPage />} />
+              <Route path="sales" element={<SalesReportPage />} />
+            </Route>
+
+            {/* Admin Routes with Separate Layout */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route index element={<Navigate to="dashboard" replace />} />
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<AdminManageUsers />} />
+              <Route path="users/:id" element={<AdminUserDetails />} />
+              <Route path="applications" element={<AdminStoreApplications />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </CompareProvider>
+    </AuthProvider>
   );
 }

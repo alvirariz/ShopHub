@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { login } from '../../services/authService';
+import { login as loginService } from '../../services/authService';
+import { useAuth } from '../../contexts/AuthContext';
 import './Auth.css';
 
 export default function LoginPage() {
@@ -9,6 +10,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,12 +18,12 @@ export default function LoginPage() {
     setError('');
 
     try {
-      const data = await login(email, password);
+      const data = await loginService(email, password);
       const { token, user } = data;
       
-      localStorage.setItem('token', token);
+      login(token, user.role);
       localStorage.setItem('userId', user.id);
-      localStorage.setItem('userRole', user.role);
+      localStorage.setItem('userName', user.name || '');
 
       if (user.role === 'storeOwner') {
         navigate('/store-owner');

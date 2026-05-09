@@ -24,6 +24,7 @@ router.get('/search', searchProducts);                      // UC-06: Search Pro
 router.get('/filter', filterProducts);                      // UC-07: Filter Products
 router.get('/filter-options', getFilterOptions);            // Fetch dynamic categories and brands
 router.get('/compare', compareProducts);                    // UC-15: Compare Products
+router.get('/low-stock', authenticate, isStoreOwner, viewLowStockAlerts);           // UC-31: View Low Stock Alerts
 router.get('/:productId', getProductDetails);               // UC-14: View Product Details
 
 // AUTHENTICATED CUSTOMER ROUTES (optional - you can keep these public too)
@@ -34,6 +35,5 @@ router.post('/', authenticate, isStoreOwner, addProduct);                       
 router.put('/:productId', authenticate, isStoreOwner, editProduct);                 // UC-28: Edit Product
 router.put('/:productId/withdraw', authenticate, isStoreOwner, withdrawProduct);    // UC-29: Withdraw Product Listing
 router.put('/:productId/stock', authenticate, isStoreOwner, updateStockQuantity);   // UC-30: Update Stock Quantity
-router.get('/low-stock', authenticate, isStoreOwner, viewLowStockAlerts);           // UC-31: View Low Stock Alerts
 
 module.exports = router;
