@@ -104,3 +104,22 @@
   color: #666;
   font-size: 18px;
 }
+
+@media (max-width: 560px) {
+  .notifications-page {
+    padding: 1.5rem 1rem;
+  }
+  .notification-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  .notification-content {
+    gap: 1rem;
+  }
+  .mark-read-btn {
+    width: 100%;
+    text-align: center;
+  }
+}

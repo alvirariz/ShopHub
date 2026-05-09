@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { addToCart } from '../../services/cartService';
 import { compareProducts } from '../../services/productService';
 import { useCompare } from '../../contexts/CompareContext';
@@ -138,6 +138,65 @@ export default function CompareProductsPage() {
             </tr>
           </tbody>
         </table>
+      </div>
+
+      {/* Mobile view: Render as vertical product cards */}
+      <div className="mobile-compare-cards">
+        {products.map(product => (
+          <div className="mobile-compare-card" key={product.id}>
+            <button className="remove-card-btn" onClick={() => handleRemove(product.id)}>&times;</button>
+            <div className="card-header">
+              <img 
+                src={product.imageUrl || `https://picsum.photos/seed/${product.id}/150/150`} 
+                alt={product.name} 
+              />
+              <h3>{product.name}</h3>
+            </div>
+            
+            <div className="feature-row">
+              <span className="feature-label">Price</span>
+              <span className="feature-value price-cell">{formatPrice(product.price)}</span>
+            </div>
+            
+            <div className="feature-row">
+              <span className="feature-label">Rating</span>
+              <span className="feature-value">
+                {'★'.repeat(Math.round(product.rating || 5))}{'☆'.repeat(5 - Math.round(product.rating || 5))}
+              </span>
+            </div>
+            
+            <div className="feature-row">
+              <span className="feature-label">Category</span>
+              <span className="feature-value">{product.category}</span>
+            </div>
+            
+            <div className="feature-row">
+              <span className="feature-label">Stock Status</span>
+              <span className="feature-value">
+                {product.stock > 0 ? (
+                  <span className="in-stock">In Stock ({product.stock})</span>
+                ) : (
+                  <span className="out-of-stock">Out of Stock</span>
+                )}
+              </span>
+            </div>
+            
+            <div className="feature-row">
+              <span className="feature-label">Description</span>
+              <span className="feature-value desc-cell">{product.description}</span>
+            </div>
+            
+            <div className="card-actions">
+              <button 
+                className="add-to-cart-btn"
+                onClick={() => handleAddToCart(product)}
+                disabled={addingToCart === product.id || product.stock <= 0}
+              >
+                {addingToCart === product.id ? 'Adding...' : 'Add To Cart'}
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

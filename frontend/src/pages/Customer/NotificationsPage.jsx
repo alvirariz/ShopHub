@@ -57,7 +57,9 @@ export default function NotificationsPage() {
 
   return (
     <div className="notifications-page">
-      <h1 className="page-title">Notifications</h1>
+      <div className="customer-banner-header">
+        <h1>Notifications</h1>
+      </div>
 
       {notifications.length === 0 ? (
         <div className="empty-state">You have no new notifications.</div>

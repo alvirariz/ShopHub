@@ -90,15 +90,17 @@ export default function ForYouPage() {
 
   return (
     <div className="for-you-page">
-      <form className="search-bar-container" onSubmit={handleSearch}>
-        <input 
-          type="text" 
-          className="search-input" 
-          placeholder="Search Shophub..."
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-      </form>
+      <div className="for-you-top-bar">
+        <form className="search-form" onSubmit={handleSearch}>
+          <input 
+            type="text" 
+            placeholder="Search products..."
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          <button type="submit" className="search-btn">Search</button>
+        </form>
+      </div>
 
       <div className="for-you-header">
         <h1>FOR YOU:</h1>
