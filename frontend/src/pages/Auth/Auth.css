@@ -1,0 +1,267 @@
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #FAFAFA;
+  font-family: 'Inter', sans-serif;
+  padding: 2rem;
+}
+
+.auth-card {
+  background-color: #FFF;
+  padding: 3rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 450px;
+}
+
+.store-owner-card {
+  max-width: 600px;
+}
+
+.auth-title {
+  color: #800020;
+  font-size: 32px;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  font-family: 'Playfair Display', serif;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.auth-form input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.auth-form input:focus {
+  outline: none;
+  border-color: #800020;
+}
+
+.auth-btn {
+  background-color: #800020;
+  color: #FFF;
+  border: none;
+  border-radius: 50px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.auth-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.auth-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.auth-error {
+  color: #D32F2F;
+  font-size: 14px;
+  text-align: center;
+}
+
+.auth-success {
+  color: #2E7D32;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.auth-footer {
+  margin-top: 2rem;
+  text-align: center;
+  border-top: 1px solid #EEE;
+  padding-top: 2rem;
+}
+
+.auth-footer p {
+  color: #666;
+  margin: 0 0 1rem 0;
+}
+
+.auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.auth-links a {
+  color: #800020;
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.auth-links a:hover {
+  opacity: 0.8;
+}
+
+/* Preferences Questionnaire Styles */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.category-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #FAFAFA;
+  padding: 10px 12px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  color: #333;
+}
+
+.category-checkbox:hover {
+  background-color: #FDF2F2;
+  border-color: #800020;
+}
+
+.category-checkbox input[type="checkbox"] {
+  accent-color: #800020;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* Preferences Wizard Styles */
+.pref-progress {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  letter-spacing: 1px;
+  margin-bottom: 2rem;
+}
+
+.pref-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pref-title {
+  font-size: 24px;
+  color: #111;
+  margin-bottom: 2rem;
+  text-align: center;
+  font-weight: 700;
+}
+
+.pref-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 3rem;
+}
+
+.pref-pill {
+  background-color: #FDF2F2;
+  color: #111;
+  border: 2px solid transparent;
+  border-radius: 50px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pref-pill:hover {
+  background-color: #f5e4e4;
+}
+
+.pref-pill.active {
+  background-color: #800020;
+  color: #FFF;
+  border-color: #800020;
+}
+
+/* Budget Slider */
+.budget-slider-container {
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 3rem;
+}
+
+.budget-values {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  font-weight: 600;
+  color: #800020;
+  font-size: 18px;
+}
+
+.budget-slider {
+  width: 100%;
+  accent-color: #800020;
+}
+
+/* Navigation */
+.pref-navigation {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.pref-skip {
+  background: none;
+  border: none;
+  color: #888;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 10px 20px;
+}
+
+.pref-skip:hover {
+  color: #555;
+}
+
+.pref-next {
+  background-color: #800020;
+  color: #FFF;
+  border: none;
+  border-radius: 50px;
+  padding: 12px 32px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.pref-next:hover {
+  opacity: 0.9;
+}
