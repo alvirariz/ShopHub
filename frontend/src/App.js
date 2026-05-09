@@ -35,6 +35,9 @@ import SalesReportPage from './pages/StoreOwner/SalesReportPage';
 function Layout() {
   return (
     <div className="app-layout">
+      <div className="mobile-top-bar">
+        <span className="sidebar-logo">ShopHub</span>
+      </div>
       <Sidebar />
       <main className="app-main">
         <Outlet />
@@ -47,6 +50,9 @@ function Layout() {
 function AdminLayout() {
   return (
     <div className="app-layout">
+      <div className="mobile-top-bar">
+        <span className="sidebar-logo">ShopHub Admin</span>
+      </div>
       <AdminSidebar />
       <main className="app-main">
         <Outlet />
@@ -57,7 +63,10 @@ function AdminLayout() {
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const role = localStorage.getItem('userRole');
-  if (role !== requiredRole) {
+  if (!role) {
+    return <Navigate to="/auth/login" replace />;
+  }
+  if (requiredRole && role !== requiredRole) {
     return <Navigate to="/auth/login" replace />;
   }
   return children;
@@ -71,8 +80,12 @@ export default function App() {
           <Routes>
             {/* Standard User Routes */}
             <Route path="/" element={<Layout />}>
-              <Route index element={<Navigate to="/for-you" replace />} />
-              <Route path="for-you" element={<ForYouPage />} />
+              <Route index element={<Navigate to="/products" replace />} />
+              <Route path="for-you" element={
+                <ProtectedRoute requiredRole="customer">
+                  <ForYouPage />
+                </ProtectedRoute>
+              } />
               <Route path="cart" element={<ShoppingCartPage />} />
               <Route path="checkout" element={<CheckoutPage />} />
               <Route path="products" element={<BrowseProductsPage />} />

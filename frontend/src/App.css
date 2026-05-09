@@ -5,7 +5,7 @@
 
 .app-main {
   flex: 1;
-  background: var(--color-bg);
+  background: #FAFAFA;
   overflow-y: auto;
   min-width: 0;
 }
@@ -18,4 +18,111 @@
   color: var(--color-text-muted);
   font-size: 1rem;
   font-family: var(--font-sans);
+}
+
+.mobile-top-bar {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .app-main {
+    padding-bottom: 60px;
+    /* Space for bottom nav bar */
+    padding-top: 60px;
+    /* Space for top bar */
+  }
+
+  .mobile-top-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    background-color: #FFF;
+    border-bottom: 1px solid var(--color-divider);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+}
+
+/* Unified Page Header for Dashboards */
+.page-header {
+  background: white;
+  padding: 20px 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  margin-bottom: 24px;
+}
+
+.page-header h1 {
+  font-family: var(--font-sans), 'Inter', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #2C181D;
+  margin: 0 0 8px;
+}
+
+.page-header p {
+  color: #666;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+/* Customer Pages Banner Header */
+.customer-banner-header {
+  background: linear-gradient(135deg, rgba(217, 150, 162, 0.9) 0%, rgba(200, 30, 80, 0.9) 100%);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  margin-bottom: 2.5rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 12px 24px rgba(200, 30, 80, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.customer-banner-header::before {
+  content: '';
+  position: absolute;
+  top: -30%;
+  left: -10%;
+  width: 50%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.customer-banner-header::after {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  right: -10%;
+  width: 60%;
+  height: 150%;
+  background: radial-gradient(circle, rgba(255, 180, 200, 0.3) 0%, rgba(255, 255, 255, 0) 70%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.customer-banner-header h1 {
+  color: #FFFFFF;
+  margin: 0;
+  font-size: 46px;
+  font-weight: 900;
+  letter-spacing: 5px;
+  text-transform: uppercase;
+  text-shadow: 0 4px 16px rgba(128, 0, 32, 0.3);
+  position: relative;
+  z-index: 1;
 }

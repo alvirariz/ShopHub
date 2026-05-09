@@ -20,7 +20,23 @@ export default function AdminSidebar() {
 
   return (
     <aside className="sidebar" aria-label="Admin navigation">
-      <div className="sidebar-logo">ShopHub Admin</div>
+      <div className="sidebar-header">
+        <div className="sidebar-logo" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }} onClick={() => navigate('/admin/dashboard')}>
+          <span>ShopHub</span>
+          <span style={{ 
+            fontSize: '1rem', 
+            color: '#FF4D6D', 
+            textShadow: 'none', 
+            marginTop: '-4px',
+            fontFamily: 'Inter, sans-serif',
+            textTransform: 'uppercase',
+            letterSpacing: '2px',
+            fontWeight: '600'
+          }}>
+            Admin
+          </span>
+        </div>
+      </div>
 
       <nav className="sidebar-nav">
         {NAV_ITEMS.map(({ label, path }) => (
