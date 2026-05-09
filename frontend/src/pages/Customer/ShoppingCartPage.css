@@ -305,3 +305,63 @@
     font-size: 1.5rem;
   }
 }
+
+@media (max-width: 560px) {
+  .cart-table, .cart-table thead, .cart-table tbody, .cart-table th, .cart-table td, .cart-table tr, .cart-table tfoot {
+    display: block;
+  }
+  .cart-table thead {
+    display: none; /* Hide headers */
+  }
+  .cart-row {
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #EEE;
+    position: relative;
+  }
+  .cart-table td {
+    border: none;
+    position: relative;
+    padding-left: 50%;
+    text-align: right;
+    width: auto;
+  }
+  .cart-table td.col-items {
+    padding-left: 0;
+    text-align: left;
+    display: flex;
+    justify-content: flex-start;
+  }
+  .cart-table td:not(.col-items)::before {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 45%;
+    padding-right: 10px;
+    white-space: nowrap;
+    text-align: left;
+    font-weight: 600;
+  }
+  .cart-table td.col-qty::before { content: "Quantity"; }
+  .cart-table td.col-price::before { content: "Price"; }
+  .cart-table td.col-delete::before { content: "Remove"; }
+  .cart-table td.col-subtotal::before { content: "Subtotal"; }
+  
+  .total-row td {
+    padding-left: 0;
+    text-align: right;
+    display: flex;
+    justify-content: space-between;
+  }
+  .total-row .total-label {
+    text-align: left;
+    font-weight: bold;
+  }
+  .col-delete {
+    text-align: right !important;
+  }
+  .qty-controls {
+    justify-content: flex-end;
+  }
+}

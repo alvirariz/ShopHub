@@ -61,8 +61,12 @@ export default function CompareProductsPage() {
 
   return (
     <div className="compare-products-page">
-      <div className="compare-header">
-        <button className="back-btn" onClick={() => navigate(-1)}>← Back</button>
+      <div style={{ marginBottom: '1rem' }}>
+        <button className="back-btn" onClick={() => navigate(-1)}>
+          ← Back to Products
+        </button>
+      </div>
+      <div className="customer-banner-header">
         <h1>Compare Products</h1>
       </div>
 

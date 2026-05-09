@@ -527,7 +527,7 @@
     box-sizing: border-box;
   }
   .products-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 1rem;
   }
   .floating-compare-bar {
