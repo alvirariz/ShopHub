@@ -24,6 +24,7 @@ model Product {
     brand         String? // NEW
     rating        Float    @default(0) //NEW
     salesCount    Int      @default(0) //NEW
+    imageUrl      String?
 }
 
 model Order {
