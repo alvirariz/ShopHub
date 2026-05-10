@@ -4,6 +4,7 @@ import { addToCart } from '../../services/cartService';
 import { addToWishlist } from '../../services/wishlistService';
 import { getProductDetails } from '../../services/productService';
 import { getReviewsByProduct, submitReview } from '../../services/reviewService';
+import ToastNotification from '../../components/ToastNotification';
 import './ProductDetailsPage.css';
 
 export default function ProductDetailsPage() {
@@ -14,6 +15,7 @@ export default function ProductDetailsPage() {
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [toast, setToast] = useState({ isVisible: false, message: '' });
   
   // Reviews state
   const [reviews, setReviews] = useState([]);
@@ -64,8 +66,8 @@ export default function ProductDetailsPage() {
       setAddingToCart(true);
       const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, quantity);
-      // Optional: Add a toast notification here
-      alert('Added to cart successfully!');
+      setToast({ isVisible: true, message: 'Added to cart! 🛒' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
       alert('Failed to add item to cart: ' + (err.message || 'Unknown error'));
     } finally {
@@ -81,7 +83,8 @@ export default function ProductDetailsPage() {
         return;
       }
       await addToWishlist(userId, product.id);
-      alert('Added to wishlist successfully!');
+      setToast({ isVisible: true, message: 'Added to wishlist! ❤️' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
       alert(err.message || 'Failed to add to wishlist');
     }
@@ -272,6 +275,7 @@ export default function ProductDetailsPage() {
           </div>
         </div>
       </div>
+      <ToastNotification isVisible={toast.isVisible} message={toast.message} />
     </div>
   );
 }

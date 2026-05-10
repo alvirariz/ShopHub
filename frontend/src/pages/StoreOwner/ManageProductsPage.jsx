@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Plus, Edit2, XCircle, Save, X, EyeOff, Trash2 } from 'lucide-react';
 import api, { routes } from '../../services/api';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function ManageProductsPage() {
   const [products, setProducts] = useState([]);
@@ -13,6 +14,7 @@ export default function ManageProductsPage() {
   const [addForm, setAddForm] = useState({ name: '', description: '', price: '', category: '', stock: '', imageUrl: '' });
   const [editForm, setEditForm] = useState({ name: '', description: '', price: '', stock: '' });
   const [submitting, setSubmitting] = useState(false);
+  const [dialog, setDialog] = useState({ isOpen: false, type: '', productId: null });
 
   useEffect(() => {
     fetchProducts();
@@ -56,14 +58,15 @@ export default function ManageProductsPage() {
     }
   };
 
+  const handleWithdrawClick = (id, action) => {
+    setDialog({ isOpen: true, type: action, productId: id });
+  };
+
   const handleWithdraw = async (id, action) => {
-    const confirmMsg = action === "delete" 
-      ? "Permanently delete this product?" 
-      : "Delist this product? It will be hidden from customers.";
-    if (!window.confirm(confirmMsg)) return;
     try {
       await api.put(routes.products.withdraw(id), { action });
       fetchProducts(); // Refresh
+      setDialog({ isOpen: false, type: '', productId: null });
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Failed to withdraw product');
     }
@@ -230,7 +233,7 @@ export default function ManageProductsPage() {
                               <Edit2 size={18} />
                             </button>
                             <button 
-                              onClick={() => handleWithdraw(id, "delist")}
+                              onClick={() => handleWithdrawClick(id, "delist")}
                               disabled={isWithdrawn}
                               className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Delist"
@@ -238,7 +241,7 @@ export default function ManageProductsPage() {
                               <EyeOff size={18} />
                             </button>
                             <button 
-                              onClick={() => handleWithdraw(id, "delete")}
+                              onClick={() => handleWithdrawClick(id, "delete")}
                               disabled={isWithdrawn}
                               className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Delete"
@@ -301,6 +304,17 @@ export default function ManageProductsPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmDialog 
+        isOpen={dialog.isOpen}
+        icon={dialog.type === 'delete' ? Trash2 : EyeOff}
+        iconBgColor={dialog.type === 'delete' ? 'bg-rose-100 text-rose-500' : 'bg-amber-100 text-amber-600'}
+        title={dialog.type === 'delete' ? 'Delete this product?' : 'Delist this product?'}
+        message={dialog.type === 'delete' ? 'You are about to permanently delete this product' : 'You are about to delist this product'}
+        confirmText={dialog.type === 'delete' ? 'Yes, Delete' : 'Yes, Delist'}
+        onConfirm={() => handleWithdraw(dialog.productId, dialog.type)}
+        onCancel={() => setDialog({ isOpen: false, type: '', productId: null })}
+      />
     </div>
   );
 }

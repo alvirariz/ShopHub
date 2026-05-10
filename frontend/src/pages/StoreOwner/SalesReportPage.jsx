@@ -6,17 +6,29 @@ export default function SalesReportPage() {
   const [data, setData] = useState({ sales: null, insights: null });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  const [filter, setFilter] = useState('7');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
-    fetchReports();
-  }, []);
+    if (filter === 'custom') {
+      if (startDate && endDate) {
+        fetchReports();
+      }
+    } else {
+      fetchReports();
+    }
+  }, [filter, startDate, endDate]);
 
   const fetchReports = async () => {
     try {
       setLoading(true);
+      const params = filter === 'custom' ? { startDate, endDate } : { days: filter };
+
       const [salesRes, insightsRes] = await Promise.all([
-        api.get(routes.storeOwner.sales),
-        api.get(routes.storeOwner.insights)
+        api.get(routes.storeOwner.sales, { params }),
+        api.get(routes.storeOwner.insights, { params })
       ]);
       setData({
         sales: salesRes.data || {},
@@ -57,6 +69,40 @@ export default function SalesReportPage() {
       <div className="page-header">
         <h1>Sales & Insights</h1>
         <p>Detailed performance metrics for your store.</p>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-3 mb-6">
+        {['7', '30', 'monthly', 'custom'].map(f => (
+          <button
+            key={f}
+            onClick={() => setFilter(f)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors border ${
+              filter === f 
+                ? 'bg-rose-50 text-rose-600 border-rose-200' 
+                : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50'
+            }`}
+          >
+            {f === '7' ? '7 Days' : f === '30' ? '30 Days' : f === 'monthly' ? 'Monthly' : 'Custom'}
+          </button>
+        ))}
+
+        {filter === 'custom' && (
+          <div className="flex flex-wrap items-center gap-2 ml-0 sm:ml-4">
+            <input 
+              type="date" 
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 bg-white focus:outline-none focus:border-rose-300"
+            />
+            <span className="text-slate-400">to</span>
+            <input 
+              type="date" 
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="px-3 py-2 border border-slate-200 rounded-lg text-sm text-slate-700 bg-white focus:outline-none focus:border-rose-300"
+            />
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
