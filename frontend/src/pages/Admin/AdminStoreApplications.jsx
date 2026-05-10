@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiRequest, routes } from '../../services/api';
+import { getApplications, manageApplication } from '../../services/adminService';
 import './Admin.css';
 
 export default function AdminStoreApplications() {
@@ -11,10 +11,7 @@ export default function AdminStoreApplications() {
   const fetchApplications = async () => {
     setLoading(true);
     try {
-      const data = await apiRequest({
-        url: routes.admin.applications,
-        method: 'GET'
-      });
+      const data = await getApplications();
       setApplications(data.applications || []);
     } catch (err) {
       setError(err.message || 'Failed to load applications');
@@ -44,11 +41,7 @@ export default function AdminStoreApplications() {
     const rejectReason = action === 'reject' ? 'Rejected by admin' : null;
 
     try {
-      await apiRequest({
-        url: routes.admin.manageApplication(applicationId),
-        method: 'PATCH',
-        data: { action, rejectReason }
-      });
+      await manageApplication(applicationId, { action, rejectReason });
       fetchApplications();
     } catch (err) {
       alert(err.message || `Failed to ${action} application`);

@@ -19,3 +19,13 @@ export const cancelOrder = async (orderId) => {
   const response = await api.put(routes.orders.cancel(orderId));
   return response.data;
 };
+
+export const getIncomingOrders = async () => {
+  const response = await api.get(routes.orders.incoming);
+  return response.data;
+};
+
+export const updateOrderStatus = async (orderId, newStatus) => {
+  const response = await api.put(routes.orders.updateStatus(orderId), { newStatus });
+  return response.data;
+};

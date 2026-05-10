@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { apiRequest, routes } from '../../services/api';
+import { getUserDetails, updateUserStatus } from '../../services/adminService';
 import './Admin.css';
 
 export default function AdminUserDetails() {
@@ -14,10 +14,7 @@ export default function AdminUserDetails() {
   const fetchUserDetails = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await apiRequest({
-        url: routes.admin.userDetails(id),
-        method: 'GET'
-      });
+      const data = await getUserDetails(id);
       setUser(data);
     } catch (err) {
       setError(err.message || 'Failed to fetch user details');
@@ -44,11 +41,7 @@ export default function AdminUserDetails() {
     const action = currentStatus ? 'reactivate' : 'suspend';
 
     try {
-      await apiRequest({
-        url: routes.admin.userStatus(userId),
-        method: 'PATCH',
-        data: { action }
-      });
+      await updateUserStatus(userId, { action });
       fetchUserDetails();
     } catch (err) {
       alert(err.message || `Failed to ${action} user`);

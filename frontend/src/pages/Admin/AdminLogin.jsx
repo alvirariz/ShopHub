@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api, { routes } from '../../services/api';
+import { login } from '../../services/authService';
 import '../Auth/Auth.css'; // Reusing the same auth CSS
 
 export default function AdminLogin() {
@@ -16,8 +16,8 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      const response = await api.post(routes.auth.login, { email, password });
-      const { token, user } = response.data;
+      const data = await login(email, password);
+      const { token, user } = data;
 
       // Restrict this login portal to ONLY admins
       if (user.role !== 'admin') {

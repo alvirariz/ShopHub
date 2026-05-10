@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart3, TrendingUp, ShoppingBag, Trophy, Calendar } from 'lucide-react';
-import api, { routes } from '../../services/api';
+import { getSales, getInsights } from '../../services/storeOwnerService';
 
 export default function SalesReportPage() {
   const [data, setData] = useState({ sales: null, insights: null });
@@ -14,13 +14,13 @@ export default function SalesReportPage() {
   const fetchReports = async () => {
     try {
       setLoading(true);
-      const [salesRes, insightsRes] = await Promise.all([
-        api.get(routes.storeOwner.sales),
-        api.get(routes.storeOwner.insights)
+      const [salesData, insightsData] = await Promise.all([
+        getSales(),
+        getInsights()
       ]);
       setData({
-        sales: salesRes.data || {},
-        insights: insightsRes.data || {}
+        sales: salesData || {},
+        insights: insightsData || {}
       });
       setError(null);
     } catch (err) {

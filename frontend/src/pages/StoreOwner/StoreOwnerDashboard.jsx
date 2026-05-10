@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Package, AlertTriangle, DollarSign, TrendingUp, Clock } from 'lucide-react';
-import api, { routes } from '../../services/api';
+import { getLowStockProducts } from '../../services/productService';
+import { getIncomingOrders } from '../../services/orderService';
+import { getSales } from '../../services/storeOwnerService';
 
 export default function StoreOwnerDashboard() {
   const [data, setData] = useState({
@@ -17,16 +19,16 @@ export default function StoreOwnerDashboard() {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const [lowStockRes, ordersRes, salesRes] = await Promise.all([
-          api.get(routes.products.lowStock),
-          api.get(routes.orders.incoming),
-          api.get(routes.storeOwner.sales)
+        const [lowStockData, ordersData, salesData] = await Promise.all([
+          getLowStockProducts(),
+          getIncomingOrders(),
+          getSales()
         ]);
 
         setData({
-          lowStock: lowStockRes.data?.products || [],
-          incomingOrders: ordersRes.data?.orders || [],
-          sales: salesRes.data || { totalRevenue: 0, totalOrders: 0 }
+          lowStock: lowStockData?.products || [],
+          incomingOrders: ordersData?.orders || [],
+          sales: salesData || { totalRevenue: 0, totalOrders: 0 }
         });
       } catch (err) {
         setError(err.response?.data?.message || err.message || 'Failed to load dashboard data');

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Plus, Edit2, XCircle, Save, X, EyeOff, Trash2 } from 'lucide-react';
-import api, { routes } from '../../services/api';
+import { browseProducts, createProduct, withdrawProduct, editProduct } from '../../services/productService';
 
 export default function ManageProductsPage() {
   const [products, setProducts] = useState([]);
@@ -22,10 +22,8 @@ export default function ManageProductsPage() {
     try {
       setLoading(true);
       const storeId = localStorage.getItem('userId');
-      const response = await api.get(routes.products.browse, {
-        params: { storeId }
-      });
-      setProducts(response.data?.products || []);
+      const data = await browseProducts({ storeId });
+      setProducts(data?.products || []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to load products');
@@ -45,7 +43,7 @@ export default function ManageProductsPage() {
         stock: parseInt(addForm.stock, 10),
         storeId: parseInt(localStorage.getItem('userId'), 10)
       };
-      await api.post(routes.products.create, payload);
+      await createProduct(payload);
       setShowAddForm(false);
       setAddForm({ name: '', description: '', price: '', category: '', stock: '', imageUrl: '' });
       fetchProducts(); // Refresh list
@@ -62,7 +60,7 @@ export default function ManageProductsPage() {
       : "Delist this product? It will be hidden from customers.";
     if (!window.confirm(confirmMsg)) return;
     try {
-      await api.put(routes.products.withdraw(id), { action });
+      await withdrawProduct(id, action);
       fetchProducts(); // Refresh
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Failed to withdraw product');
@@ -88,7 +86,7 @@ export default function ManageProductsPage() {
         price: parseFloat(editForm.price),
         stock: parseInt(editForm.stock, 10)
       };
-      await api.put(routes.products.edit(id), payload);
+      await editProduct(id, payload);
       setEditingId(null);
       fetchProducts(); // Refresh
     } catch (err) {

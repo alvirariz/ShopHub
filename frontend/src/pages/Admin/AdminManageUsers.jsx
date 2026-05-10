@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { apiRequest, routes } from '../../services/api';
+import { getUsers, updateUserStatus } from '../../services/adminService';
 import './Admin.css';
 
 export default function AdminManageUsers() {
@@ -13,11 +13,7 @@ export default function AdminManageUsers() {
   const fetchUsers = async (query = '') => {
     setLoading(true);
     try {
-      const endpoint = routes.admin.users + (query ? `?q=${encodeURIComponent(query)}` : '');
-      const data = await apiRequest({
-        url: endpoint,
-        method: 'GET'
-      });
+      const data = await getUsers(query);
       setUsers(data.users || []);
     } catch (err) {
       setError(err.message || 'Failed to search users');
@@ -49,11 +45,7 @@ export default function AdminManageUsers() {
     const action = currentStatus ? 'reactivate' : 'suspend';
 
     try {
-      await apiRequest({
-        url: routes.admin.userStatus(userId),
-        method: 'PATCH',
-        data: { action }
-      });
+      await updateUserStatus(userId, { action });
       fetchUsers(searchQuery);
     } catch (err) {
       alert(err.message || `Failed to ${action} user`);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ClipboardList, CheckCircle, AlertCircle } from 'lucide-react';
-import api, { routes } from '../../services/api';
+import { browseProducts, updateProductStock } from '../../services/productService';
 
 export default function InventoryPage() {
   const [items, setItems] = useState([]);
@@ -20,10 +20,8 @@ export default function InventoryPage() {
     try {
       setLoading(true);
       const storeId = localStorage.getItem('userId');
-      const response = await api.get(routes.products.browse, {
-        params: { storeId }
-      });
-      const itemsData = response.data?.products || [];
+      const data = await browseProducts({ storeId });
+      const itemsData = data?.products || [];
       setItems(itemsData);
       
       // Initialize stock inputs
@@ -55,7 +53,7 @@ export default function InventoryPage() {
       setUpdating(prev => ({ ...prev, [id]: true }));
       setStatusMessage({ ...statusMessage, [id]: null });
       
-      await api.put(routes.products.updateStock(id), { stock: newValue });
+      await updateProductStock(id, newValue);
       
       setStatusMessage({ ...statusMessage, [id]: { type: 'success', text: 'Stock updated!' } });
       

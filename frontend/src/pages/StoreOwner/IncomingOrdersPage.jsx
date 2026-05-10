@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
-import api, { routes } from '../../services/api';
+import { getIncomingOrders, updateOrderStatus } from '../../services/orderService';
 
 export default function IncomingOrdersPage() {
   const [orders, setOrders] = useState([]);
@@ -15,8 +15,8 @@ export default function IncomingOrdersPage() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await api.get(routes.orders.incoming);
-      setOrders(response.data?.orders || []);
+      const data = await getIncomingOrders();
+      setOrders(data?.orders || []);
       setError(null);
     } catch (err) {
       setError(err.response?.data?.message || err.message || 'Failed to load incoming orders');
@@ -28,7 +28,7 @@ export default function IncomingOrdersPage() {
   const handleStatusChange = async (orderId, newStatus) => {
     try {
       setUpdatingId(orderId);
-      await api.put(routes.orders.updateStatus(orderId), { newStatus });
+      await updateOrderStatus(orderId, newStatus);
       
       // Update local state
       setOrders(orders.map(order => 

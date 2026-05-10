@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { apiRequest, routes } from '../../services/api';
+import { getMetrics } from '../../services/adminService';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, Legend, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import './Admin.css';
 
@@ -13,10 +13,7 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchMetrics = async () => {
       try {
-        const data = await apiRequest({
-          url: routes.admin.metrics,
-          method: 'GET'
-        });
+        const data = await getMetrics();
         setMetrics(data.metrics);
         setGraphs(data.graphs);
         setRecentTransactions(data.recentTransactions || []);
