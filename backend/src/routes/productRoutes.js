@@ -30,9 +30,25 @@ router.get('/:productId', getProductDetails);               // UC-14: View Produ
 // AUTHENTICATED CUSTOMER ROUTES (optional - you can keep these public too)
 router.get('/', sortProducts);                              // UC-08: Sort Products
 
+const multer = require('multer');
+const path = require('path');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, '../../uploads/'))
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname)
+  }
+});
+const upload = multer({ storage: storage });
+
 // STORE OWNER ONLY ROUTES
-router.post('/', authenticate, isStoreOwner, addProduct);                           // UC-27: Add Product
-router.put('/:productId', authenticate, isStoreOwner, editProduct);                 // UC-28: Edit Product
+router.post('/test-upload', upload.single('image'), (req, res) => {
+  res.json({ body: req.body, file: req.file });
+});
+router.post('/', authenticate, isStoreOwner, upload.single('image'), addProduct);                           // UC-27: Add Product
+router.put('/:productId', authenticate, isStoreOwner, upload.single('image'), editProduct);                 // UC-28: Edit Product
 router.put('/:productId/withdraw', authenticate, isStoreOwner, withdrawProduct);    // UC-29: Withdraw Product Listing
 router.put('/:productId/stock', authenticate, isStoreOwner, updateStockQuantity);   // UC-30: Update Stock Quantity
 
