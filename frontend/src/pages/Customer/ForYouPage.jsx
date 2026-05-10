@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addToCart } from '../../services/cartService';
-import { addToWishlist } from '../../services/wishlistService';
+import { addToWishlist, getWishlist } from '../../services/wishlistService';
 import { browseProducts, searchProducts } from '../../services/productService';
 import { getRecommendations } from '../../services/preferenceService';
 import { useCompare } from '../../contexts/CompareContext';
@@ -15,6 +15,7 @@ export default function ForYouPage() {
   const [addingToCart, setAddingToCart] = useState(null);
   const [keyword, setKeyword] = useState('');
   const [toast, setToast] = useState({ isVisible: false, message: '' });
+  const [wishlistSet, setWishlistSet] = useState(new Set());
   const { toggleCompare, isSelected } = useCompare();
   const navigate = useNavigate();
 
@@ -41,8 +42,24 @@ export default function ForYouPage() {
     }
   };
 
+  const fetchWishlist = async () => {
+    try {
+      const userId = localStorage.getItem('userId');
+      if (userId) {
+        const data = await getWishlist(userId);
+        if (data && data.wishlist) {
+          const ids = new Set(data.wishlist.map(item => item.productId || item.id || item._id));
+          setWishlistSet(ids);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load wishlist:', error);
+    }
+  };
+
   useEffect(() => {
     fetchProducts();
+    fetchWishlist();
   }, []);
 
   const handleSearch = (e) => {
@@ -67,15 +84,24 @@ export default function ForYouPage() {
 
   const handleAddToWishlist = async (product, e) => {
     e.stopPropagation();
+    const productId = product.id || product._id;
+    
+    if (wishlistSet.has(productId)) {
+      setToast({ isVisible: true, message: 'Already in your wishlist! ❤️' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 3000);
+      return;
+    }
+
     try {
       const userId = localStorage.getItem('userId');
       if (!userId) {
         alert('Please log in to add to wishlist');
         return;
       }
-      await addToWishlist(userId, product.id);
+      await addToWishlist(userId, productId);
+      setWishlistSet(prev => new Set([...prev, productId]));
       setToast({ isVisible: true, message: 'Added to wishlist! ❤️' });
-      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 3000);
     } catch (err) {
       alert(err.message || 'Failed to add to wishlist');
     }

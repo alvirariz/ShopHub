@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { browseProducts, searchProducts } from '../../services/productService';
 import { addToCart } from '../../services/cartService';
-import { addToWishlist } from '../../services/wishlistService';
+import { addToWishlist, getWishlist } from '../../services/wishlistService';
 import { useCompare } from '../../contexts/CompareContext';
 import ToastNotification from '../../components/ToastNotification';
 import './BrowseProductsPage.css';
@@ -22,6 +22,7 @@ export default function BrowseProductsPage() {
   const [showFilters, setShowFilters] = useState(true);
 
   const [addingToCart, setAddingToCart] = useState(null);
+  const [wishlistSet, setWishlistSet] = useState(new Set());
   const [toast, setToast] = useState({ isVisible: false, message: '' });
   const { toggleCompare, isSelected } = useCompare();
   
@@ -50,6 +51,16 @@ export default function BrowseProductsPage() {
 
   useEffect(() => {
     fetchProducts();
+    const userId = localStorage.getItem('userId');
+    if (userId) {
+      getWishlist(userId)
+        .then(data => {
+          if (data && data.items) {
+            setWishlistSet(new Set(data.items.map(item => item.productId)));
+          }
+        })
+        .catch(err => console.error('Failed to fetch wishlist', err));
+    }
   }, []);
 
   const handleSearch = (e) => {
@@ -80,7 +91,16 @@ export default function BrowseProductsPage() {
         alert('Please log in to add to wishlist');
         return;
       }
-      await addToWishlist(userId, product.id || product._id);
+      
+      const productId = product.id || product._id;
+      if (wishlistSet.has(productId)) {
+        setToast({ isVisible: true, message: 'Already in your wishlist! ❤️' });
+        setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
+        return;
+      }
+
+      await addToWishlist(userId, productId);
+      setWishlistSet(prev => new Set(prev).add(productId));
       setToast({ isVisible: true, message: 'Added to wishlist! ❤️' });
       setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
