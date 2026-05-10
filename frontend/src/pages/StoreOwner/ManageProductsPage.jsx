@@ -24,7 +24,7 @@ export default function ManageProductsPage() {
     try {
       setLoading(true);
       const storeId = localStorage.getItem('userId');
-      const data = await browseProducts({ storeId });
+      const data = await browseProducts({ storeId, includeWithdrawn: true });
       setProducts(data?.products || []);
       setError(null);
     } catch (err) {

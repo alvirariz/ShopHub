@@ -22,7 +22,7 @@ export default function InventoryPage() {
     try {
       setLoading(true);
       const storeId = localStorage.getItem('userId');
-      const data = await browseProducts({ storeId });
+      const data = await browseProducts({ storeId, includeWithdrawn: true });
       const itemsData = data?.products || [];
       setItems(itemsData);
       
