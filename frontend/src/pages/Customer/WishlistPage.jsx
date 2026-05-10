@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getWishlist, removeFromWishlist } from '../../services/wishlistService';
 import { addToCart } from '../../services/cartService';
+import ToastNotification from '../../components/ToastNotification';
 import './WishlistPage.css';
 
 export default function WishlistPage() {
   const [wishlistItems, setWishlistItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [toast, setToast] = useState({ isVisible: false, message: '' });
   const navigate = useNavigate();
 
   const userId = localStorage.getItem('userId');
@@ -43,7 +45,8 @@ export default function WishlistPage() {
   const handleAddToCart = async (product) => {
     try {
       await addToCart(userId, product.id, 1);
-      alert('Added to cart successfully!');
+      setToast({ isVisible: true, message: 'Added to cart! 🛒' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
       alert(err.message || 'Failed to add item to cart');
     }
@@ -101,6 +104,7 @@ export default function WishlistPage() {
           ))}
         </div>
       )}
+      <ToastNotification isVisible={toast.isVisible} message={toast.message} />
     </div>
   );
 }

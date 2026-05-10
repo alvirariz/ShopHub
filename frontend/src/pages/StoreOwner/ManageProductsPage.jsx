@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Package, Plus, Edit2, XCircle, Save, X, EyeOff, Trash2 } from 'lucide-react';
 import { browseProducts, createProduct, withdrawProduct, editProduct } from '../../services/productService';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function ManageProductsPage() {
   const [products, setProducts] = useState([]);
@@ -10,9 +11,10 @@ export default function ManageProductsPage() {
   const [editingId, setEditingId] = useState(null);
   
   // Forms state
-  const [addForm, setAddForm] = useState({ name: '', description: '', price: '', category: '', stock: '', imageUrl: '' });
-  const [editForm, setEditForm] = useState({ name: '', description: '', price: '', stock: '' });
+  const [addForm, setAddForm] = useState({ name: '', description: '', price: '', category: '', stock: '', image: null });
+  const [editForm, setEditForm] = useState({ name: '', description: '', price: '', stock: '', image: null });
   const [submitting, setSubmitting] = useState(false);
+  const [dialog, setDialog] = useState({ isOpen: false, type: '', productId: null });
 
   useEffect(() => {
     fetchProducts();
@@ -36,16 +38,21 @@ export default function ManageProductsPage() {
     e.preventDefault();
     try {
       setSubmitting(true);
-      const payload = {
-        name: addForm.name,
-        category: addForm.category,
-        price: parseFloat(addForm.price),
-        stock: parseInt(addForm.stock, 10),
-        storeId: parseInt(localStorage.getItem('userId'), 10)
-      };
-      await createProduct(payload);
+      const formData = new FormData();
+      formData.append('name', addForm.name);
+      formData.append('category', addForm.category);
+      formData.append('price', addForm.price);
+      formData.append('stock', addForm.stock);
+      formData.append('storeId', localStorage.getItem('userId'));
+      if (addForm.image) {
+        formData.append('image', addForm.image);
+      }
+      
+      await api.post(routes.products.create, formData, {
+        headers: { 'Content-Type': undefined }
+      });
       setShowAddForm(false);
-      setAddForm({ name: '', description: '', price: '', category: '', stock: '', imageUrl: '' });
+      setAddForm({ name: '', description: '', price: '', category: '', stock: '', image: null });
       fetchProducts(); // Refresh list
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Failed to add product');
@@ -54,14 +61,15 @@ export default function ManageProductsPage() {
     }
   };
 
+  const handleWithdrawClick = (id, action) => {
+    setDialog({ isOpen: true, type: action, productId: id });
+  };
+
   const handleWithdraw = async (id, action) => {
-    const confirmMsg = action === "delete" 
-      ? "Permanently delete this product?" 
-      : "Delist this product? It will be hidden from customers.";
-    if (!window.confirm(confirmMsg)) return;
     try {
       await withdrawProduct(id, action);
       fetchProducts(); // Refresh
+      setDialog({ isOpen: false, type: '', productId: null });
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Failed to withdraw product');
     }
@@ -74,19 +82,23 @@ export default function ManageProductsPage() {
       name: product.name || '',
       description: product.description || '',
       price: product.price || '',
-      stock: product.stockQuantity || ''
+      stock: product.stockQuantity || '',
+      image: null
     });
   };
 
   const handleEditSubmit = async (id) => {
     try {
       setSubmitting(true);
-      const payload = {
-        name: editForm.name,
-        price: parseFloat(editForm.price),
-        stock: parseInt(editForm.stock, 10)
-      };
-      await editProduct(id, payload);
+      const formData = new FormData();
+      if (editForm.name) formData.append('name', editForm.name);
+      if (editForm.price) formData.append('price', editForm.price);
+      if (editForm.stock) formData.append('stock', editForm.stock);
+      if (editForm.image) formData.append('image', editForm.image);
+
+      await api.put(routes.products.edit(id), formData, {
+        headers: { 'Content-Type': undefined }
+      });
       setEditingId(null);
       fetchProducts(); // Refresh
     } catch (err) {
@@ -153,8 +165,8 @@ export default function ManageProductsPage() {
               <input required type="text" className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-rose-500 focus:border-rose-500" value={addForm.category} onChange={e => setAddForm({...addForm, category: e.target.value})} />
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
-              <input required type="url" className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-rose-500 focus:border-rose-500" value={addForm.imageUrl} onChange={e => setAddForm({...addForm, imageUrl: e.target.value})} />
+              <label className="block text-sm font-medium text-slate-700 mb-1">Product Image</label>
+              <input required type="file" accept="image/*" className="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-rose-500 focus:border-rose-500" onChange={e => setAddForm({...addForm, image: e.target.files[0]})} />
             </div>
             <div className="col-span-1 md:col-span-2 flex justify-end gap-3 mt-2">
               <button type="button" onClick={() => setShowAddForm(false)} className="px-5 py-2.5 text-slate-600 hover:bg-slate-100 rounded-lg font-medium transition-colors">Cancel</button>
@@ -228,7 +240,7 @@ export default function ManageProductsPage() {
                               <Edit2 size={18} />
                             </button>
                             <button 
-                              onClick={() => handleWithdraw(id, "delist")}
+                              onClick={() => handleWithdrawClick(id, "delist")}
                               disabled={isWithdrawn}
                               className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Delist"
@@ -236,7 +248,7 @@ export default function ManageProductsPage() {
                               <EyeOff size={18} />
                             </button>
                             <button 
-                              onClick={() => handleWithdraw(id, "delete")}
+                              onClick={() => handleWithdrawClick(id, "delete")}
                               disabled={isWithdrawn}
                               className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Delete"
@@ -269,6 +281,10 @@ export default function ManageProductsPage() {
                                   <label className="block text-xs text-slate-500 mb-1">Stock</label>
                                   <input type="number" className="w-full border-slate-300 rounded p-2 text-sm" value={editForm.stock} onChange={e => setEditForm({...editForm, stock: e.target.value})} />
                                 </div>
+                                <div>
+                                  <label className="block text-xs text-slate-500 mb-1">Update Image</label>
+                                  <input type="file" accept="image/*" className="w-full border-slate-300 rounded p-1 text-sm" onChange={e => setEditForm({...editForm, image: e.target.files[0]})} />
+                                </div>
                                 <div className="md:col-span-4">
                                   <label className="block text-xs text-slate-500 mb-1">Description</label>
                                   <textarea className="w-full border-slate-300 rounded p-2 text-sm h-16" value={editForm.description} onChange={e => setEditForm({...editForm, description: e.target.value})}></textarea>
@@ -299,6 +315,17 @@ export default function ManageProductsPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmDialog 
+        isOpen={dialog.isOpen}
+        icon={dialog.type === 'delete' ? Trash2 : EyeOff}
+        iconBgColor={dialog.type === 'delete' ? 'bg-rose-100 text-rose-500' : 'bg-amber-100 text-amber-600'}
+        title={dialog.type === 'delete' ? 'Delete this product?' : 'Delist this product?'}
+        message={dialog.type === 'delete' ? 'You are about to permanently delete this product' : 'You are about to delist this product'}
+        confirmText={dialog.type === 'delete' ? 'Yes, Delete' : 'Yes, Delist'}
+        onConfirm={() => handleWithdraw(dialog.productId, dialog.type)}
+        onCancel={() => setDialog({ isOpen: false, type: '', productId: null })}
+      />
     </div>
   );
 }

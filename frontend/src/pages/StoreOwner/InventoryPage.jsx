@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ClipboardList, CheckCircle, AlertCircle } from 'lucide-react';
 import { browseProducts, updateProductStock } from '../../services/productService';
+import { ClipboardList, CheckCircle, AlertCircle, PackageCheck } from 'lucide-react';
+import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function InventoryPage() {
   const [items, setItems] = useState([]);
@@ -11,6 +12,7 @@ export default function InventoryPage() {
   const [stockInputs, setStockInputs] = useState({});
   const [updating, setUpdating] = useState({});
   const [statusMessage, setStatusMessage] = useState({});
+  const [dialog, setDialog] = useState({ isOpen: false, productId: null });
 
   useEffect(() => {
     fetchInventory();
@@ -42,12 +44,19 @@ export default function InventoryPage() {
     setStockInputs(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleUpdateStock = async (id) => {
+  const handleUpdateStockClick = (id) => {
     const newValue = parseInt(stockInputs[id], 10);
     if (isNaN(newValue) || newValue < 0) {
       setStatusMessage({ ...statusMessage, [id]: { type: 'error', text: 'Invalid quantity' } });
       return;
     }
+    setDialog({ isOpen: true, productId: id });
+  };
+
+  const handleUpdateStock = async (id) => {
+    const newValue = parseInt(stockInputs[id], 10);
+
+    setDialog({ isOpen: false, productId: null });
 
     try {
       setUpdating(prev => ({ ...prev, [id]: true }));
@@ -145,7 +154,7 @@ export default function InventoryPage() {
                               disabled={isUpdating}
                             />
                               <button
-                                onClick={() => handleUpdateStock(id)}
+                                onClick={() => handleUpdateStockClick(id)}
                                 disabled={isUpdating}
                                 className="text-white px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
                                 style={{ backgroundColor: '#c4566a' }}
@@ -175,6 +184,17 @@ export default function InventoryPage() {
           </table>
         </div>
       </div>
+
+      <ConfirmDialog 
+        isOpen={dialog.isOpen}
+        icon={PackageCheck}
+        iconBgColor="bg-green-100 text-green-600"
+        title="Update Stock?"
+        message="You are about to update the stock quantity"
+        confirmText="Yes, Update"
+        onConfirm={() => handleUpdateStock(dialog.productId)}
+        onCancel={() => setDialog({ isOpen: false, productId: null })}
+      />
     </div>
   );
 }

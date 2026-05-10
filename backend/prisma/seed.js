@@ -5,6 +5,20 @@ const prisma = new PrismaClient() // this creates a connection now through prism
 
 async function main() {
 
+  // Create admin user
+  const bcrypt = require('bcryptjs');
+  const hashedAdminPassword = await bcrypt.hash('admin123', 10);
+  await prisma.user.upsert({
+    where: { email: 'admin@shophub.com' },
+    update: { password: hashedAdminPassword },
+    create: {
+      name: 'System Admin',
+      email: 'admin@shophub.com',
+      password: hashedAdminPassword,
+      role: 'admin',
+    }
+  });
+
   // create fake users
   for (let i = 0; i < 10; i++) {
     await prisma.user.create({

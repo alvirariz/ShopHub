@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { addToCart } from '../../services/cartService';
 import { compareProducts } from '../../services/productService';
 import { useCompare } from '../../contexts/CompareContext';
+import ToastNotification from '../../components/ToastNotification';
 import './CompareProductsPage.css';
 
 export default function CompareProductsPage() {
@@ -10,6 +11,7 @@ export default function CompareProductsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [addingToCart, setAddingToCart] = useState(null);
+  const [toast, setToast] = useState({ isVisible: false, message: '' });
   const { compareList, removeFromCompare } = useCompare();
   const navigate = useNavigate();
 
@@ -39,7 +41,8 @@ export default function CompareProductsPage() {
       setAddingToCart(product.id);
       const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, 1);
-      alert('Added to cart!');
+      setToast({ isVisible: true, message: 'Added to cart! 🛒' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
       alert('Failed to add item to cart: ' + (err.message || 'Unknown error'));
     } finally {
@@ -202,6 +205,7 @@ export default function CompareProductsPage() {
           </div>
         ))}
       </div>
+      <ToastNotification isVisible={toast.isVisible} message={toast.message} />
     </div>
   );
 }

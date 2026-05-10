@@ -5,6 +5,7 @@ import { addToWishlist } from '../../services/wishlistService';
 import { browseProducts, searchProducts } from '../../services/productService';
 import { getRecommendations } from '../../services/preferenceService';
 import { useCompare } from '../../contexts/CompareContext';
+import ToastNotification from '../../components/ToastNotification';
 import './ForYouPage.css';
 
 export default function ForYouPage() {
@@ -13,6 +14,7 @@ export default function ForYouPage() {
   const [error, setError] = useState(null);
   const [addingToCart, setAddingToCart] = useState(null);
   const [keyword, setKeyword] = useState('');
+  const [toast, setToast] = useState({ isVisible: false, message: '' });
   const { toggleCompare, isSelected } = useCompare();
   const navigate = useNavigate();
 
@@ -54,7 +56,8 @@ export default function ForYouPage() {
       setAddingToCart(product.id);
       const userId = localStorage.getItem('userId');
       await addToCart(userId, product.id, 1);
-      // Show success feedback if needed
+      setToast({ isVisible: true, message: 'Added to cart! 🛒' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
       alert('Failed to add item to cart: ' + (err.message || 'Unknown error'));
     } finally {
@@ -71,7 +74,8 @@ export default function ForYouPage() {
         return;
       }
       await addToWishlist(userId, product.id);
-      alert('Added to wishlist successfully!');
+      setToast({ isVisible: true, message: 'Added to wishlist! ❤️' });
+      setTimeout(() => setToast({ isVisible: false, message: '' }), 2000);
     } catch (err) {
       alert(err.message || 'Failed to add to wishlist');
     }
@@ -161,6 +165,7 @@ export default function ForYouPage() {
           {products.length === 0 && <div className="no-products">No products available at the moment.</div>}
         </div>
       )}
+      <ToastNotification isVisible={toast.isVisible} message={toast.message} />
     </div>
   );
 }
