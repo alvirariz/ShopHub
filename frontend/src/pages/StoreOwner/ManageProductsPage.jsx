@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, Edit2, XCircle, Save, X } from 'lucide-react';
+import { Package, Plus, Edit2, XCircle, Save, X, EyeOff, Trash2 } from 'lucide-react';
 import api, { routes } from '../../services/api';
 
 export default function ManageProductsPage() {
@@ -61,10 +61,13 @@ export default function ManageProductsPage() {
     }
   };
 
-  const handleWithdraw = async (id) => {
-    if (!window.confirm('Are you sure you want to withdraw this product?')) return;
+  const handleWithdraw = async (id, action) => {
+    const confirmMsg = action === "delete" 
+      ? "Permanently delete this product?" 
+      : "Delist this product? It will be hidden from customers.";
+    if (!window.confirm(confirmMsg)) return;
     try {
-      await api.put(routes.products.withdraw(id));
+      await api.put(routes.products.withdraw(id), { action });
       fetchProducts(); // Refresh
     } catch (err) {
       alert(err.response?.data?.message || err.message || 'Failed to withdraw product');
@@ -236,12 +239,20 @@ export default function ManageProductsPage() {
                               <Edit2 size={18} />
                             </button>
                             <button 
-                              onClick={() => handleWithdraw(id)}
+                              onClick={() => handleWithdraw(id, "delist")}
+                              disabled={isWithdrawn}
+                              className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors disabled:opacity-30"
+                              title="Delist"
+                            >
+                              <EyeOff size={18} />
+                            </button>
+                            <button 
+                              onClick={() => handleWithdraw(id, "delete")}
                               disabled={isWithdrawn}
                               className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-30"
-                              title="Withdraw"
+                              title="Delete"
                             >
-                              <XCircle size={18} />
+                              <Trash2 size={18} />
                             </button>
                           </div>
                         </td>
