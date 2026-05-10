@@ -23,6 +23,8 @@ export const AuthProvider = ({ children }) => {
     setUserRole(null);
     localStorage.removeItem('token');
     localStorage.removeItem('userRole');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userName');
   };
 
   return (
