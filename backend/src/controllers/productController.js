@@ -168,7 +168,7 @@ const addProduct = async (req, res) => {
     const backendUrl = 'http://localhost:3000';
     const imageUrl = req.file ? `${backendUrl}/uploads/${req.file.filename}` : null;
 
-    const product = await prisma.Product.create({
+    const product = await prisma.product.create({
       data: {
         name,
         price: parseFloat(price),
@@ -190,9 +190,12 @@ const addProduct = async (req, res) => {
     });
 
   } catch (error) {
+    console.error("ADD PRODUCT ERROR:", error);
+    require('fs').appendFileSync('error.log', new Date().toISOString() + '\\n' + error.stack + '\\n\\n');
     return res.status(500).json({
       message: "Error adding product",
-      error: error.message
+      error: error.message,
+      stack: error.stack
     });
   }
 };
@@ -202,8 +205,7 @@ const editProduct = async (req, res) => {
   const updates = req.body;
 
   try {
-    // Check if product exists
-    const product = await prisma.Product.findUnique({
+    const product = await prisma.product.findUnique({
       where: { id: parseInt(productId) }
     });
 
@@ -221,7 +223,7 @@ const editProduct = async (req, res) => {
       updates.imageUrl = `${backendUrl}/uploads/${req.file.filename}`;
     }
 
-    const updated = await prisma.Product.update({
+    const updated = await prisma.product.update({
       where: { id: parseInt(productId) },
       data: updates
     });

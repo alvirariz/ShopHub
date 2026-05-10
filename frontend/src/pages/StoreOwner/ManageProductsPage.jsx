@@ -48,9 +48,7 @@ export default function ManageProductsPage() {
         formData.append('image', addForm.image);
       }
       
-      await api.post(routes.products.create, formData, {
-        headers: { 'Content-Type': undefined }
-      });
+      await createProduct(formData);
       setShowAddForm(false);
       setAddForm({ name: '', description: '', price: '', category: '', stock: '', image: null });
       fetchProducts(); // Refresh list
@@ -96,9 +94,7 @@ export default function ManageProductsPage() {
       if (editForm.stock) formData.append('stock', editForm.stock);
       if (editForm.image) formData.append('image', editForm.image);
 
-      await api.put(routes.products.edit(id), formData, {
-        headers: { 'Content-Type': undefined }
-      });
+      await editProduct(id, formData);
       setEditingId(null);
       fetchProducts(); // Refresh
     } catch (err) {

@@ -10,7 +10,7 @@ const manageUserStatus = async (req, res) => {
         // TODO: Later we'll check if req.user.role === 'admin'
         // For now, anyone can do this (testing only!)
         
-        const user = await prisma.User.findUnique({   // find user
+        const user = await prisma.user.findUnique({   // find user
             where: { id: parseInt(userId) }
         });
         
@@ -19,7 +19,7 @@ const manageUserStatus = async (req, res) => {
         }
         
         if (action === "suspend") {
-            await prisma.User.update({
+            await prisma.user.update({
                 where: { id: parseInt(userId) },
                 data: { isSuspended: true }
             });
@@ -27,7 +27,7 @@ const manageUserStatus = async (req, res) => {
         }
         
         if (action === "reactivate") {
-            await prisma.User.update({
+            await prisma.user.update({
                 where: { id: parseInt(userId) },
                 data: { isSuspended: false }
             });
@@ -49,23 +49,23 @@ const manageUserStatus = async (req, res) => {
 const getPlatformMetrics = async (req, res) => {
     try {
         // Basic counts
-        const totalUsers = await prisma.User.count();
-        const totalOrders = await prisma.Order.count();
-        const totalProducts = await prisma.Product.count();
+        const totalUsers = await prisma.user.count();
+        const totalOrders = await prisma.order.count();
+        const totalProducts = await prisma.product.count();
         
         // Total revenue
-        const totalRevenue = await prisma.Order.aggregate({
+        const totalRevenue = await prisma.order.aggregate({
             _sum: { total: true }
         });
         
         // Recent activity (last 24 hours)
         const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
         
-        const recentUsers = await prisma.User.count({
+        const recentUsers = await prisma.user.count({
             where: { createdAt: { gte: oneDayAgo } }
         });
         
-        const recentOrders = await prisma.Order.count({
+        const recentOrders = await prisma.order.count({
             where: { createdAt: { gte: oneDayAgo } }
         });
         
@@ -73,7 +73,7 @@ const getPlatformMetrics = async (req, res) => {
         const currentYear = new Date().getFullYear();
         const startOfYear = new Date(currentYear, 0, 1);
         
-        const allOrdersYear = await prisma.Order.findMany({
+        const allOrdersYear = await prisma.order.findMany({
             where: { createdAt: { gte: startOfYear } },
             select: { total: true, createdAt: true }
         });
@@ -97,7 +97,7 @@ const getPlatformMetrics = async (req, res) => {
         tenDaysAgo.setDate(tenDaysAgo.getDate() - 9);
         tenDaysAgo.setHours(0,0,0,0);
 
-        const recentOrdersForBar = await prisma.Order.findMany({
+        const recentOrdersForBar = await prisma.order.findMany({
             where: { createdAt: { gte: tenDaysAgo } },
             select: { createdAt: true }
         });
@@ -123,7 +123,7 @@ const getPlatformMetrics = async (req, res) => {
         }));
         
         // Recent Transactions for the dashboard table
-        const recentOrdersRaw = await prisma.Order.findMany({
+        const recentOrdersRaw = await prisma.order.findMany({
             take: 5,
             orderBy: { createdAt: 'desc' },
             select: {
@@ -137,7 +137,7 @@ const getPlatformMetrics = async (req, res) => {
 
         // Manually fetch user names since the relation is missing in Prisma schema
         const customerIds = [...new Set(recentOrdersRaw.map(o => o.customerId))];
-        const customers = await prisma.User.findMany({
+        const customers = await prisma.user.findMany({
             where: { id: { in: customerIds } },
             select: { id: true, name: true }
         });
@@ -156,7 +156,7 @@ const getPlatformMetrics = async (req, res) => {
         }));
 
         // User roles distribution for third chart
-        const roleDistributionRaw = await prisma.User.groupBy({
+        const roleDistributionRaw = await prisma.user.groupBy({
             by: ['role'],
             _count: { role: true }
         });

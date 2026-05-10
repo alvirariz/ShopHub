@@ -30,13 +30,13 @@ export const compareProducts = async (ids) => {
   return response.data;
 };
 
-export const createProduct = async (payload) => {
-  const response = await api.post(routes.products.create, payload);
+export const createProduct = async (payload, config = {}) => {
+  const response = await api.post(routes.products.create, payload, config);
   return response.data;
 };
 
-export const editProduct = async (id, payload) => {
-  const response = await api.put(routes.products.edit(id), payload);
+export const editProduct = async (id, payload, config = {}) => {
+  const response = await api.put(routes.products.edit(id), payload, config);
   return response.data;
 };
 
