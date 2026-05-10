@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Package, Plus, Edit2, XCircle, Save, X, EyeOff, Trash2 } from 'lucide-react';
 import { browseProducts, createProduct, withdrawProduct, editProduct } from '../../services/productService';
+import { Package, Plus, Edit2, XCircle, Save, X, EyeOff, Trash2, Eye } from 'lucide-react';
 import ConfirmDialog from '../../components/ConfirmDialog';
 
 export default function ManageProductsPage() {
@@ -192,11 +192,11 @@ export default function ManageProductsPage() {
                 products.map(product => {
                   const id = product.id || product._id;
                   const isEditing = editingId === id;
-                  const isWithdrawn = product.status === 'withdrawn';
+                  const isDelisted = product.isWithdrawn === true;
 
                   return (
                     <React.Fragment key={id}>
-                      <tr className={`border-b border-slate-100 transition-colors ${isWithdrawn ? 'bg-slate-50 opacity-75' : 'hover:bg-slate-50'}`}>
+                      <tr className={`border-b border-slate-100 transition-colors ${isDelisted ? 'bg-slate-50 opacity-75' : 'hover:bg-slate-50'}`}>
                         <td className="p-4">
                           <div className="flex items-center gap-4">
                             {product.imageUrl ? (
@@ -220,24 +220,32 @@ export default function ManageProductsPage() {
                         </td>
                         <td className="p-4">
                           <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize
-                            ${product.status === 'active' ? 'bg-emerald-100 text-emerald-700' : 
-                              isWithdrawn ? 'bg-slate-200 text-slate-600' : 'bg-amber-100 text-amber-700'}`}>
-                            {product.status || 'Active'}
+                            ${isDelisted ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'}`}>
+                            {isDelisted ? 'Delisted' : 'Active'}
                           </span>
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex justify-end gap-2">
                             <button 
                               onClick={() => startEditing(product)}
-                              disabled={isWithdrawn || isEditing}
+                              disabled={isDelisted || isEditing}
                               className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Edit"
                             >
                               <Edit2 size={18} />
                             </button>
+                            {isDelisted && (
+                              <button 
+                                onClick={() => handleWithdrawClick(id, "relist")}
+                                className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                                title="Relist Product"
+                              >
+                                <Eye size={18} />
+                              </button>
+                            )}
                             <button 
                               onClick={() => handleWithdrawClick(id, "delist")}
-                              disabled={isWithdrawn}
+                              disabled={isDelisted}
                               className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Delist"
                             >
@@ -245,7 +253,6 @@ export default function ManageProductsPage() {
                             </button>
                             <button 
                               onClick={() => handleWithdrawClick(id, "delete")}
-                              disabled={isWithdrawn}
                               className="p-2 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors disabled:opacity-30"
                               title="Delete"
                             >
@@ -314,11 +321,11 @@ export default function ManageProductsPage() {
 
       <ConfirmDialog 
         isOpen={dialog.isOpen}
-        icon={dialog.type === 'delete' ? Trash2 : EyeOff}
-        iconBgColor={dialog.type === 'delete' ? 'bg-rose-100 text-rose-500' : 'bg-amber-100 text-amber-600'}
-        title={dialog.type === 'delete' ? 'Delete this product?' : 'Delist this product?'}
-        message={dialog.type === 'delete' ? 'You are about to permanently delete this product' : 'You are about to delist this product'}
-        confirmText={dialog.type === 'delete' ? 'Yes, Delete' : 'Yes, Delist'}
+        icon={dialog.type === 'delete' ? Trash2 : (dialog.type === 'relist' ? Eye : EyeOff)}
+        iconBgColor={dialog.type === 'delete' ? 'bg-rose-100 text-rose-500' : (dialog.type === 'relist' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600')}
+        title={dialog.type === 'delete' ? 'Delete this product?' : (dialog.type === 'relist' ? 'Relist this product?' : 'Delist this product?')}
+        message={dialog.type === 'delete' ? 'You are about to permanently delete this product' : (dialog.type === 'relist' ? 'This product will become visible to customers again' : 'You are about to delist this product')}
+        confirmText={dialog.type === 'delete' ? 'Yes, Delete' : (dialog.type === 'relist' ? 'Yes, Relist' : 'Yes, Delist')}
         onConfirm={() => handleWithdraw(dialog.productId, dialog.type)}
         onCancel={() => setDialog({ isOpen: false, type: '', productId: null })}
       />

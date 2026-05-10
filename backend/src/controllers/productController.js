@@ -58,6 +58,14 @@ const withdrawProduct = async (req, ans) => {
       return ans.json({ message: "Product delisted succesfully", product: updated }) //ans.json() is how to send data to frontend
     }
 
+    if (action === "relist") {
+      const updated = await prisma.product.update({
+        where: { id: parseInt(productId) },
+        data: { isWithdrawn: false }
+      })
+      return ans.json({ message: "Product relisted successfully", product: updated })
+    }
+
     //if neither delist or delete:
     return ans.status(400).json({ message: "Invalid action.Use delete or delist" })
   }
@@ -296,9 +304,13 @@ const getProductDetails = async (req, res) => {
 //uc5: Browse Products
 const browseProducts = async (req, res) => {
   try {
-    const { category, storeId } = req.query
+    const { category, storeId, includeWithdrawn } = req.query
 
-    const filters = { isDeleted: false, isWithdrawn: false }
+    const filters = { isDeleted: false }
+
+    if (!includeWithdrawn || includeWithdrawn === 'false') {
+      filters.isWithdrawn = false
+    }
 
     if (category) filters.category = category
     if (storeId) filters.storeId = parseInt(storeId)
