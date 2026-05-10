@@ -10,6 +10,7 @@ datasource db {
 model Product {
     id          Int         @id @default(autoincrement())
     name        String 
+    description String?     // NEW
     price       Float
     stock       Int 
     isWithdrawn Boolean     @default(false)
