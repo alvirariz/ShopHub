@@ -342,7 +342,6 @@ On the frontend, `App.js` defines three route trees — the default storefront l
 
 ---
 
-## Screenshots
 
 | Screen | Description |
 |---|---|
